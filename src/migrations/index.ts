@@ -7,6 +7,7 @@ import * as migration_20261115_213221_remove_cost_text from './20261115_213221_r
 import * as migration_20261115_213224_fees from './20261115_213224_fees';
 import * as migration_20261115_214136_travel_and_social from './20261115_214136_travel_and_social';
 import * as migration_20261115_215556_documents from './20261115_215556_documents';
+import * as migration_20261115_221112_page_wording from './20261115_221112_page_wording';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20261115_215556_documents.up,
     down: migration_20261115_215556_documents.down,
-    name: '20261115_215556_documents'
+    name: '20261115_215556_documents',
+  },
+  {
+    up: migration_20261115_221112_page_wording.up,
+    down: migration_20261115_221112_page_wording.down,
+    name: '20261115_221112_page_wording'
   },
 ];

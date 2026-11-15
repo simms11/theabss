@@ -6,7 +6,12 @@ import { EventCard } from '@/components/EventCard'
 import { LocationMap } from '@/components/LocationMap'
 import { Quote } from '@/components/Quote'
 import { VideoEmbed } from '@/components/VideoEmbed'
-import { getPublishedPages, getSiteSettings, getUpcomingEvents } from '@/lib/queries'
+import {
+  getPageContent,
+  getPublishedPages,
+  getSiteSettings,
+  getUpcomingEvents,
+} from '@/lib/queries'
 import { keyFacts } from '@/lib/keyFacts'
 import { socialLinksFrom } from '@/lib/social'
 import { youtubeId } from '@/lib/youtube'
@@ -21,10 +26,11 @@ const SUBJECT_ACCENTS = ['border-t-red', 'border-t-gold', 'border-t-green', 'bor
  * school teaches by, what's coming up, where to find us, then the school's history.
  */
 export default async function HomePage() {
-  const [settings, events, pages] = await Promise.all([
+  const [settings, events, pages, content] = await Promise.all([
     getSiteSettings(),
     getUpcomingEvents(3),
     getPublishedPages(),
+    getPageContent(),
   ])
   const { school, teaching, quotes } = settings
   const subjects = teaching?.subjects ?? []
@@ -76,7 +82,9 @@ export default async function HomePage() {
           </>
         )}
         <div className="container-site py-20 sm:py-28">
-          <p className="eyebrow text-accent">Saturday school in South London</p>
+          {content.home?.heroLabel && (
+            <p className="eyebrow text-accent">{content.home.heroLabel}</p>
+          )}
           <h1 className="text-display-xl mt-3 max-w-3xl">{settings.siteName}</h1>
           {/* What the school is, in a sentence, before its values. */}
           {settings.description && (

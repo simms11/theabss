@@ -15,6 +15,8 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 - **Fees and payment:** the headline price, the full fees table and the terms, then how to pay: online from a bank account through GoCardless payment links, so no payment data touches the site, or by bank transfer with copyable details.
 - **Video:** the school's YouTube videos, shown as still images; the player loads only when a visitor presses play, from YouTube's no-cookie domain.
 - **Forms and documents:** PDF and Word files for parents, uploaded in the admin and listed by category with their type and size.
+- **Privacy:** the site sets no cookies of its own and uses no trackers. A privacy notice says what the contact form keeps and for how long, and which features come from other providers.
+- **Editable wording:** page introductions and the closing invitation are edited in the admin under Page wording.
 - **Safeguarding:** every photo upload must state whether it shows children; if it does, parental consent must be confirmed before it can be saved.
 - **Location:** one address in Site Settings drives the key facts, the directions link and the map.
 - **Media:** images in a private S3 bucket served through CloudFront.

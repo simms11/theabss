@@ -1,17 +1,20 @@
 /**
- * The school's core pages: About, Educational Services and School Life. The words are the
+ * The school's core pages: About, Educational Services, School Life and Privacy. The words are the
  * school's own, with each quotation set as a quotation with its source.
  *
  * The seed creates these once; after that they belong to the editors and are never
  * overwritten. Addresses match the redirects in src/lib/legacyRedirects.ts.
  */
 import { DEFAULT_SUBJECTS } from '../../src/globals/SiteSettings'
+import { ENQUIRY_RETENTION_MONTHS } from '../../src/lib/enquiry'
 
 export type SeedPage = {
   title: string
   slug: string
   intro: string
   order: number
+  /** Where the site links to the page. Defaults to the main menu. */
+  navigation?: 'header' | 'footer'
   content: string
 }
 
@@ -85,4 +88,57 @@ Our holistic approach helps to develop well-rounded individuals who are prepared
 `,
 }
 
-export const PAGES: SeedPage[] = [ABOUT, EDUCATIONAL_SERVICES, SCHOOL_LIFE]
+/**
+ * The privacy notice, written to match what this site actually does. It is a starting point,
+ * not legal advice: the school should read it, correct anything that differs from its own
+ * practice, and keep it up to date in the admin.
+ */
+const PRIVACY: SeedPage = {
+  title: 'Privacy',
+  slug: 'privacy',
+  intro: 'What this website collects, why, and the choices you have.',
+  order: 90,
+  navigation: 'footer',
+  content: `
+## Who we are
+
+This website is run by the Afruika Bantu Saturday School. We are responsible for the personal information described here. To ask about it, use the contact form on this site.
+
+## Sending us a message
+
+When you use the contact form we collect your name, your email address, your message and, if you choose to give them, a phone number and your child’s age band. We ask you not to send your child’s name or date of birth.
+
+- We use this only to reply to you.
+- It is seen only by the school’s administrators.
+- It is deleted automatically after ${ENQUIRY_RETENTION_MONTHS} months.
+- We rely on our legitimate interest in answering the questions people send us.
+
+## Cookies and tracking
+
+This website itself sets no cookies for visitors and we do not use analytics or advertising trackers. The only cookie of our own is the one that keeps school staff signed in to the site’s admin area. The Google map on some pages may set Google’s cookies, as described below.
+
+## Maps, videos and payments
+
+Some features come from other companies.
+
+- **Map.** The map is provided by Google. On pages that show it, your browser connects to Google, which may set its own cookies.
+- **Videos.** Videos are played by YouTube and load only when you press play.
+- **Payments.** Online payments are made on GoCardless’s own pages. We never see your bank login or card details.
+
+Each of these companies has its own privacy policy, which applies once you use its service.
+
+## Photographs
+
+Photographs of children appear on this site only with the consent of a parent or carer. If you would like a photograph of your child removed, tell us and we will take it down.
+
+## Who helps us run the site
+
+The site is hosted by companies that store data on our behalf: a website host, a database provider, a file store for photographs and documents, and an email service that delivers contact form messages to the school. They act only on our instructions.
+
+## Your rights
+
+You can ask us for a copy of the information we hold about you, ask us to correct it, or ask us to delete it. If you are unhappy with how we have handled your information, you can complain to the Information Commissioner’s Office at ico.org.uk.
+`,
+}
+
+export const PAGES: SeedPage[] = [ABOUT, EDUCATIONAL_SERVICES, SCHOOL_LIFE, PRIVACY]

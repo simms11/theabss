@@ -5,8 +5,8 @@ import { removeEnquiriesFrom } from '../helpers/enquiries'
 
 const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
 
-// The last three are created by `pnpm seed`, which CI runs before these tests.
-const SEEDED_PAGES = ['/about', '/educational-services', '/school-life']
+// These are created by `pnpm seed`, which CI runs before these tests.
+const SEEDED_PAGES = ['/about', '/educational-services', '/school-life', '/privacy']
 const PUBLIC_PAGES = [
   '/',
   '/events',
@@ -146,10 +146,31 @@ test.describe('Frontend', () => {
       'About',
       'Educational Services',
       'School Life',
+      'Privacy',
       'Fees and payment',
       'Forms and documents',
       'Contact',
     ])
+  })
+
+  // The site's own pages set no cookie. (The embedded Google map may set Google's own.)
+  test('the site itself sets no cookies', async ({ page, context, baseURL }) => {
+    for (const path of ['/', '/contact', '/payment', '/events']) await page.goto(path)
+    const own = (await context.cookies()).filter(
+      (cookie) => cookie.domain.replace(/^\./, '') === new URL(baseURL ?? '').hostname,
+    )
+    expect(own).toEqual([])
+  })
+
+  test('the contact form links to a privacy notice that says what is kept and for how long', async ({
+    page,
+  }) => {
+    await page.goto('/contact')
+    await page.getByRole('link', { name: 'Read our privacy notice' }).click()
+    await expect(page).toHaveURL(/\/privacy$/)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Privacy')
+    await expect(page.getByText('deleted automatically after 12 months')).toBeVisible()
+    await expect(page.getByText(/The map is provided by Google/)).toBeVisible()
   })
 
   test('the site has its own icon', async ({ page, request }) => {

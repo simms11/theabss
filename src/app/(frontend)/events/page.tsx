@@ -5,7 +5,7 @@ import { CallToAction } from '@/components/CallToAction'
 import { EventLists } from '@/components/EventLists'
 import { EventsBrowser } from '@/components/EventsBrowser'
 import { eventFinishesAt } from '@/lib/dates'
-import { getPastEvents, getSiteSettings, getUpcomingEvents } from '@/lib/queries'
+import { getPageContent, getPastEvents, getSiteSettings, getUpcomingEvents } from '@/lib/queries'
 import { absoluteUrl, asMedia, mediaSrc, serializeJsonLd } from '@/lib/utils'
 
 export const metadata: Metadata = {
@@ -15,10 +15,11 @@ export const metadata: Metadata = {
 }
 
 export default async function EventsPage() {
-  const [upcoming, past, settings] = await Promise.all([
+  const [upcoming, past, settings, content] = await Promise.all([
     getUpcomingEvents(),
     getPastEvents(),
     getSiteSettings(),
+    getPageContent(),
   ])
 
   // Event structured data, so search engines can show dates and venues in their results.
@@ -56,10 +57,9 @@ export default async function EventsPage() {
       <section className="dark-section">
         <div className="container-site py-14">
           <h1 className="text-display-lg">Events</h1>
-          <p className="text-fg-muted mt-3 max-w-2xl text-lg">
-            Open days, performances, sports days and trips. Families and the wider community are
-            welcome.
-          </p>
+          {content.intros?.events && (
+            <p className="text-fg-muted mt-3 max-w-2xl text-lg">{content.intros.events}</p>
+          )}
           {upcoming.length > 0 && (
             <p className="mt-5">
               <a

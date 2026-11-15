@@ -1,6 +1,6 @@
 /**
  * Seeds the first admin user and the school's core pages (About,
- * Educational Services, School Life). Idempotent: safe to run more than once, never
+ * Educational Services, School Life, Privacy). Idempotent: safe to run more than once, never
  * overwrites, so re-running it can't undo an editor's changes.
  *
  *   pnpm seed                                    # local: development defaults
@@ -43,7 +43,7 @@ async function seed() {
     payload.logger.info(`Created admin user ${email} — change the password after first login.`)
   }
 
-  // The school's core pages, published and linked from the main menu. A page that exists (even as a draft) is left alone.
+  // The school's core pages, published and linked from the main menu or the footer. A page that exists (even as a draft) is left alone.
   for (const page of PAGES) {
     const existing = await payload.find({
       collection: 'pages',
@@ -59,7 +59,7 @@ async function seed() {
           slug: page.slug,
           intro: page.intro,
           content: toLexical(page.content) as never,
-          navigation: 'header',
+          navigation: page.navigation ?? 'header',
           order: page.order,
           _status: 'published',
         },

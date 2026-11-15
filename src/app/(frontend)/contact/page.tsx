@@ -4,7 +4,7 @@ import { ContactForm } from '@/components/ContactForm'
 import { LocationMap } from '@/components/LocationMap'
 import { SocialLinks } from '@/components/SocialLinks'
 import { ENQUIRY_RETENTION_MONTHS } from '@/lib/enquiry'
-import { getSiteSettings } from '@/lib/queries'
+import { getPageContent, getSiteSettings } from '@/lib/queries'
 import { socialLinksFrom } from '@/lib/social'
 import { turnstileSiteKey } from '@/lib/turnstile'
 
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 }
 
 export default async function ContactPage() {
-  const settings = await getSiteSettings()
+  const [settings, content] = await Promise.all([getSiteSettings(), getPageContent()])
   const { school, contactEmail, phone } = settings
   const socialLinks = socialLinksFrom(settings.social)
 
@@ -24,9 +24,9 @@ export default async function ContactPage() {
       <section className="dark-section">
         <div className="container-site py-14">
           <h1 className="text-display-lg">Contact</h1>
-          <p className="text-fg-muted mt-3 max-w-2xl text-lg">
-            Ask about a place for your child, volunteering, or anything else. We’ll reply by email.
-          </p>
+          {content.intros?.contact && (
+            <p className="text-fg-muted mt-3 max-w-2xl text-lg">{content.intros.contact}</p>
+          )}
         </div>
       </section>
 

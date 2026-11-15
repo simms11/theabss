@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import Script from 'next/script'
 import { useActionState, useEffect, useRef } from 'react'
 
@@ -238,7 +239,11 @@ export function ContactForm({
 
       <p className="text-fg-muted text-sm">
         We use what you send only to reply to you. It is seen only by the school’s administrators
-        and deleted after {retentionMonths} months.
+        and deleted after {retentionMonths} months.{' '}
+        <Link href="/privacy" className="text-accent font-bold">
+          Read our privacy notice
+        </Link>
+        .
       </p>
 
       <button type="submit" disabled={pending} className="btn-solid">

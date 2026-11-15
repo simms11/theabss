@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 import { DOCUMENT_CATEGORIES } from '@/collections/Documents'
 import { fileTypeLabel, formatFileSize } from '@/lib/files'
-import { getDocuments } from '@/lib/queries'
+import { getDocuments, getPageContent } from '@/lib/queries'
 
 export const metadata: Metadata = {
   title: 'Forms and documents',
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 }
 
 export default async function FormsPage() {
-  const documents = await getDocuments()
+  const [documents, content] = await Promise.all([getDocuments(), getPageContent()])
   const groups = DOCUMENT_CATEGORIES.map((category) => ({
     ...category,
     documents: documents.filter((document) => document.category === category.value),
@@ -23,9 +23,9 @@ export default async function FormsPage() {
       <section className="dark-section">
         <div className="container-site py-14">
           <h1 className="text-display-lg">Forms and documents</h1>
-          <p className="text-fg-muted mt-3 max-w-2xl text-lg">
-            The application form, school rules, policies and guides for parents and carers.
-          </p>
+          {content.intros?.forms && (
+            <p className="text-fg-muted mt-3 max-w-2xl text-lg">{content.intros.forms}</p>
+          )}
         </div>
       </section>
 

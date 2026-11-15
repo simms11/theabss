@@ -4,7 +4,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { CACHE_TAGS } from '@/hooks/revalidate'
 import { isUpcoming } from '@/lib/dates'
-import type { Document, Event, Page, SiteSetting } from '@/payload-types'
+import type { Document, Event, Page, PageContent, SiteSetting } from '@/payload-types'
 
 /**
  * All frontend reads go through this module so caching is in one place.
@@ -20,6 +20,16 @@ export const getSiteSettings = unstable_cache(
     return payload.findGlobal({ slug: 'site-settings', depth: 1 })
   },
   ['site-settings'],
+  { tags: [CACHE_TAGS.settings], revalidate: 3600 },
+)
+
+/** The editable wording of the fixed pages and shared bands. */
+export const getPageContent = unstable_cache(
+  async (): Promise<PageContent> => {
+    const payload = await payloadClient()
+    return payload.findGlobal({ slug: 'page-content', depth: 0 })
+  },
+  ['page-content'],
   { tags: [CACHE_TAGS.settings], revalidate: 3600 },
 )
 

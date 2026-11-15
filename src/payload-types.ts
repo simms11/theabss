@@ -97,9 +97,11 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'site-settings': SiteSetting;
+    'page-content': PageContent;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    'page-content': PageContentSelect<false> | PageContentSelect<true>;
   };
   locale: null;
   widgets: {
@@ -845,6 +847,29 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
+ * The introductions and invitations on the home, events, contact and forms pages.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-content".
+ */
+export interface PageContent {
+  id: number;
+  home?: {
+    heroLabel?: string | null;
+  };
+  invitation: {
+    heading: string;
+    text?: string | null;
+  };
+  intros?: {
+    events?: string | null;
+    contact?: string | null;
+    forms?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
@@ -951,6 +976,33 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         x?: T;
         youtube?: T;
         facebook?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-content_select".
+ */
+export interface PageContentSelect<T extends boolean = true> {
+  home?:
+    | T
+    | {
+        heroLabel?: T;
+      };
+  invitation?:
+    | T
+    | {
+        heading?: T;
+        text?: T;
+      };
+  intros?:
+    | T
+    | {
+        events?: T;
+        contact?: T;
+        forms?: T;
       };
   updatedAt?: T;
   createdAt?: T;

@@ -14,6 +14,7 @@ import { Events } from './collections/Events'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Users } from './collections/Users'
+import { PageContent } from './globals/PageContent'
 import { SiteSettings } from './globals/SiteSettings'
 import { shouldPushSchema } from './lib/localDatabase'
 import { MEDIA_PREFIX, mediaFileUrl, s3Enabled } from './lib/mediaStorage'
@@ -36,7 +37,7 @@ export default buildConfig({
     },
   },
   collections: [Events, Pages, Media, Documents, Enquiries, Users],
-  globals: [SiteSettings],
+  globals: [SiteSettings, PageContent],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

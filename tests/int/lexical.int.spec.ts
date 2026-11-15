@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { PAGES } from '../../scripts/content/pages'
 import { toLexical } from '../../scripts/lib/lexical'
+import { ENQUIRY_RETENTION_MONTHS } from '../../src/lib/enquiry'
 import { LEGACY_PAGES } from '../../src/lib/legacyRedirects'
 
 type Node = { type: string; tag?: string; text?: string; format?: number; children?: Node[] }
@@ -29,8 +30,10 @@ describe('seeded page content', () => {
   })
 
   describe('the school’s core pages', () => {
+    const MENU_PAGES = PAGES.filter((page) => page.navigation !== 'footer')
+
     it('each open with a quotation and never use an h1 (the title is the h1)', () => {
-      for (const page of PAGES) {
+      for (const page of MENU_PAGES) {
         const content = nodes(page.content)
         expect(content[0].type, page.slug).toBe('quote')
         expect(content.filter((n) => n.type === 'heading').every((n) => n.tag !== 'h1')).toBe(true)
@@ -39,7 +42,16 @@ describe('seeded page content', () => {
 
     it('live at the addresses the legacy redirects point to', () => {
       const destinations = new Set(Object.values(LEGACY_PAGES))
-      for (const page of PAGES) expect(destinations.has(`/${page.slug}`), page.slug).toBe(true)
+      for (const page of MENU_PAGES) {
+        expect(destinations.has(`/${page.slug}`), page.slug).toBe(true)
+      }
+    })
+
+    // The privacy notice states the retention period; it must match what the site enforces.
+    it('include a privacy notice that matches how long enquiries are really kept', () => {
+      const privacy = PAGES.find((page) => page.slug === 'privacy')
+      expect(privacy?.navigation).toBe('footer')
+      expect(privacy?.content).toContain(`after ${ENQUIRY_RETENTION_MONTHS} months`)
     })
 
     it('carry the school’s quotations', () => {

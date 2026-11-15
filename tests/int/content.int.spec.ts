@@ -195,6 +195,15 @@ describe('roles', () => {
     ).rejects.toThrow()
     await expect(
       payload.updateGlobal({
+        slug: 'page-content',
+        data: { invitation: { heading: 'Changed' } },
+        overrideAccess: false,
+        user: editor,
+        context,
+      }),
+    ).rejects.toThrow()
+    await expect(
+      payload.updateGlobal({
         slug: 'site-settings',
         data: { siteName: 'Changed' },
         overrideAccess: false,
