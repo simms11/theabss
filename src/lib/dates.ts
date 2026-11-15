@@ -21,8 +21,16 @@ const timeFormat = new Intl.DateTimeFormat('en-GB', {
 
 const dayKey = new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE }) // YYYY-MM-DD
 
-/** "Saturday 12 July 2025" */
-export const formatDay = (iso: string): string => dayFormat.format(new Date(iso))
+/**
+ * "Saturday 12 July 2025". Built from parts: whether a comma follows the weekday depends on
+ * the Node version's locale data, and the page must read the same everywhere.
+ */
+export const formatDay = (iso: string): string => {
+  const parts = Object.fromEntries(
+    dayFormat.formatToParts(new Date(iso)).map((part) => [part.type, part.value]),
+  )
+  return `${parts.weekday} ${parts.day} ${parts.month} ${parts.year}`
+}
 
 /** "10:30am" */
 export const formatTime = (iso: string): string =>
