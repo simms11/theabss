@@ -10,6 +10,7 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 - **Publishing:** pages are prerendered and refresh within seconds of a change in the admin, with no redeploy.
 - **Events:** date, venue and summary are required text, with an optional flyer. Finished events move to "past" automatically.
 - **Teaching and quotes:** the home page lists each subject taught and carries the quotations the school teaches by, marked up as quotations with their source.
+- **Core pages:** About, Educational Services and School Life, created by the seed and editable in the admin.
 - **Enquiries:** stored with the minimum data, no public API access, readable by admins only.
 - **Safeguarding:** every photo upload must state whether it shows children; if it does, parental consent must be confirmed before it can be saved.
 - **Location:** one address in Site Settings drives the key facts, the directions link and the map.
@@ -54,7 +55,7 @@ src/
     (frontend)/         the public site
     (payload)/          Payload admin + API routes (generated, don't edit)
     api/                health checks, manual revalidation
-scripts/seed.ts         first admin user
+scripts/seed.ts         first admin user and the school's core pages
 tests/int               Vitest unit and database tests
 tests/e2e               Playwright browser tests, including accessibility
 ```
@@ -66,7 +67,7 @@ Requirements: Node 22, pnpm 10, Postgres 14 or later (local, or [Neon](https://n
 ```bash
 pnpm install
 cp .env.example .env            # fill in DATABASE_URL and PAYLOAD_SECRET
-pnpm seed                       # first admin user
+pnpm seed                       # first admin user and the school's core pages
 pnpm dev                        # http://localhost:3000, admin at /admin
 ```
 
@@ -81,7 +82,7 @@ In development the database schema is created automatically and uploads are save
 | `pnpm check`          | Lint, typecheck and Prettier; run before every commit              |
 | `pnpm test:int`       | Vitest unit and database tests, in a separate `<db>_test` database |
 | `pnpm test:e2e`       | Playwright browser tests against a running dev server              |
-| `pnpm seed`           | First admin user; never overwrites                                 |
+| `pnpm seed`           | First admin user and the school's core pages; never overwrites     |
 | `pnpm generate:types` | Regenerate `src/payload-types.ts` after changing a collection      |
 
 ## Roadmap

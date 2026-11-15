@@ -1,7 +1,9 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
-const PUBLIC_PAGES = ['/', '/events', '/styleguide']
+// The last three are created by `pnpm seed`, which CI runs before these tests.
+const SEEDED_PAGES = ['/about', '/educational-services', '/school-life']
+const PUBLIC_PAGES = ['/', '/events', '/styleguide', ...SEEDED_PAGES]
 
 test.describe('Frontend', () => {
   test('home page has a real title, one main heading, landmarks and a skip link', async ({
@@ -89,6 +91,32 @@ test.describe('Frontend', () => {
       }
     })
   }
+
+  test('the school’s core pages are in the menu and carry their quotes', async ({ page }) => {
+    await page.goto('/')
+    const nav = page.getByRole('navigation', { name: 'Main' })
+    for (const name of ['About', 'Educational Services', 'School Life']) {
+      await expect(nav.getByRole('link', { name, exact: true })).toBeVisible()
+    }
+
+    const quotes = {
+      '/about': 'passport to the future',
+      '/educational-services': 'like a tree without roots',
+      '/school-life': 'kill the revolution',
+    }
+    for (const [path, words] of Object.entries(quotes)) {
+      await page.goto(path)
+      await expect(page.locator('h1')).toHaveCount(1)
+      await expect(page.locator('blockquote').first()).toContainText(words)
+    }
+  })
+
+  test('a legacy .html address lands on a real page, not a 404', async ({ page }) => {
+    const response = await page.goto('/about-us.html')
+    expect(response?.status()).toBe(200)
+    await expect(page).toHaveURL(/\/about$/)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('About')
+  })
 
   test('a legacy .html address redirects permanently to its current page', async ({ request }) => {
     const response = await request.get('/about-us.html', { maxRedirects: 0 })

@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { ValidationError } from 'payload'
 
 import { admins, authenticated, authenticatedOrPublished } from '@/access'
+import { pageEditor } from '@/fields/pageEditor'
 import { slugField } from '@/fields/slug'
 import { revalidatePage } from '@/hooks/revalidate'
 
@@ -45,7 +46,7 @@ export const Pages: CollectionConfig = {
       maxLength: 300,
       admin: { description: 'Optional short summary shown under the title.' },
     },
-    { name: 'content', type: 'richText', required: true },
+    { name: 'content', type: 'richText', required: true, editor: pageEditor },
     {
       name: 'navigation',
       type: 'select',
