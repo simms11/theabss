@@ -7,7 +7,15 @@ const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
 
 // The last three are created by `pnpm seed`, which CI runs before these tests.
 const SEEDED_PAGES = ['/about', '/educational-services', '/school-life']
-const PUBLIC_PAGES = ['/', '/events', '/contact', '/payment', '/styleguide', ...SEEDED_PAGES]
+const PUBLIC_PAGES = [
+  '/',
+  '/events',
+  '/contact',
+  '/payment',
+  '/forms',
+  '/styleguide',
+  ...SEEDED_PAGES,
+]
 
 test.describe('Frontend', () => {
   test('home page has a real title, one main heading, landmarks and a skip link', async ({

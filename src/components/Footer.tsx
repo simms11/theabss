@@ -53,6 +53,7 @@ export function Footer({ settings, pages }: { settings: SiteSetting; pages: Page
             {[
               { href: '/contact', label: 'Contact' },
               { href: '/payment', label: 'Fees and payment' },
+              { href: '/forms', label: 'Forms and documents' },
             ].map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className="inline-flex min-h-11 items-center">

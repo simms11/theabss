@@ -10,7 +10,7 @@ import {
   revalidateTag as nextRevalidateTag,
 } from 'next/cache'
 
-import type { Event, Page } from '@/payload-types'
+import type { Document, Event, Page } from '@/payload-types'
 
 /**
  * Pages are statically generated and revalidated on publish, so the school never needs a
@@ -18,11 +18,13 @@ import type { Event, Page } from '@/payload-types'
  *  - events   — the home page's upcoming list and the events page
  *  - settings — site-wide settings (header, key facts, footer, contact)
  *  - pages    — standalone pages and the menu links to them
+ *  - documents — the downloads on the Forms page
  */
 export const CACHE_TAGS = {
   events: 'events',
   settings: 'settings',
   pages: 'pages',
+  documents: 'documents',
 } as const
 
 /**
@@ -81,6 +83,13 @@ export const revalidatePage: CollectionAfterChangeHook<Page> & CollectionAfterDe
   revalidateTag(req.payload, CACHE_TAGS.pages)
   // Menu and footer links to pages appear on every page.
   revalidatePath(req.payload, '/', 'layout')
+  return doc
+}
+
+export const revalidateDocument: CollectionAfterChangeHook<Document> &
+  CollectionAfterDeleteHook<Document> = ({ doc, req: { context, payload } }) => {
+  if (context.disableRevalidate) return doc
+  revalidateTag(payload, CACHE_TAGS.documents)
   return doc
 }
 

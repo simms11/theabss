@@ -14,6 +14,7 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 - **Contact form:** follows the GOV.UK form patterns, works without JavaScript, and emails the school. It collects the minimum needed to reply; messages are readable by admins only and deleted after 12 months.
 - **Fees and payment:** the headline price, the full fees table and the terms, then how to pay: online from a bank account through GoCardless payment links, so no payment data touches the site, or by bank transfer with copyable details.
 - **Video:** the school's YouTube videos, shown as still images; the player loads only when a visitor presses play, from YouTube's no-cookie domain.
+- **Forms and documents:** PDF and Word files for parents, uploaded in the admin and listed by category with their type and size.
 - **Safeguarding:** every photo upload must state whether it shows children; if it does, parental consent must be confirmed before it can be saved.
 - **Location:** one address in Site Settings drives the key facts, the directions link and the map.
 - **Media:** images in a private S3 bucket served through CloudFront.
@@ -46,7 +47,7 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 ```
 src/
   access/               access-control rules
-  collections/          Events, Pages, Media, Enquiries, Users
+  collections/          Events, Pages, Media, Documents, Enquiries, Users
   globals/              SiteSettings: the school's key facts, contact and social links
   fields/               shared fields
   hooks/                cache revalidation
@@ -89,7 +90,6 @@ In development the database schema is created automatically and uploads are save
 
 ## Roadmap
 
-- Forms page for downloads
 - Photo gallery with a lightbox
 - S3 bucket and CloudFront distribution defined in Terraform
 - Deployment

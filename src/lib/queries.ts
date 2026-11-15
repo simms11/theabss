@@ -4,7 +4,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { CACHE_TAGS } from '@/hooks/revalidate'
 import { isUpcoming } from '@/lib/dates'
-import type { Event, Page, SiteSetting } from '@/payload-types'
+import type { Document, Event, Page, SiteSetting } from '@/payload-types'
 
 /**
  * All frontend reads go through this module so caching is in one place.
@@ -59,6 +59,23 @@ export const getPastEvents = async (limit = 24, now: Date = new Date()) =>
     .filter((event) => !isUpcoming(event, now))
     .reverse()
     .slice(0, limit)
+
+/** Every form and document, in the order editors set within each category. */
+export const getDocuments = unstable_cache(
+  async (): Promise<Document[]> => {
+    const payload = await payloadClient()
+    const { docs } = await payload.find({
+      collection: 'documents',
+      sort: ['order', 'title'],
+      limit: 200,
+      pagination: false,
+      depth: 0,
+    })
+    return docs
+  },
+  ['documents'],
+  { tags: [CACHE_TAGS.documents], revalidate: 3600 },
+)
 
 export type PageLink = Pick<Page, 'id' | 'title' | 'slug' | 'navigation' | 'updatedAt'>
 

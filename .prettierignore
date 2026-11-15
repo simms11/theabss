@@ -4,4 +4,5 @@ pnpm-lock.yaml
 src/payload-types.ts
 src/app/(payload)/admin/importMap.js
 media
+documents
 src/migrations

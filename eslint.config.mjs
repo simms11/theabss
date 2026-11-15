@@ -27,6 +27,7 @@ const eslintConfig = [
       'src/app/(payload)/admin/importMap.js',
       'src/migrations/',
       'media/',
+      'documents/',
     ],
   },
 ]

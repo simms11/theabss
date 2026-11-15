@@ -8,6 +8,7 @@ import sharp from 'sharp'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 
+import { Documents } from './collections/Documents'
 import { Enquiries } from './collections/Enquiries'
 import { Events } from './collections/Events'
 import { Media } from './collections/Media'
@@ -34,7 +35,7 @@ export default buildConfig({
       titleSuffix: ' · ABSS',
     },
   },
-  collections: [Events, Pages, Media, Enquiries, Users],
+  collections: [Events, Pages, Media, Documents, Enquiries, Users],
   globals: [SiteSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -92,6 +93,11 @@ export default buildConfig({
           prefix: MEDIA_PREFIX,
           // Media is public, and the bucket is private: serve files from CloudFront rather
           // than through a server function on every request.
+          disablePayloadAccessControl: true,
+          generateFileURL: ({ filename: file, prefix }) => mediaFileUrl(file, prefix),
+        },
+        documents: {
+          prefix: 'documents',
           disablePayloadAccessControl: true,
           generateFileURL: ({ filename: file, prefix }) => mediaFileUrl(file, prefix),
         },

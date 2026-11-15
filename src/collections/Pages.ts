@@ -13,6 +13,8 @@ export const RESERVED_SLUGS = new Set([
   'events',
   'contact',
   'payment',
+  'forms',
+  'documents',
   'styleguide',
   'sitemap',
   'robots',
