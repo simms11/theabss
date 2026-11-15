@@ -6,8 +6,8 @@ import type { SiteSetting } from '@/payload-types'
 
 /**
  * Site header. The menu is always visible and wraps on a phone, so every page is one tap
- * away without opening anything. It lists Home, Events and the pages an editor has placed
- * in the main menu, so the menu can't link to a page that doesn't exist.
+ * away without opening anything. It lists Home, Events, the pages an editor has placed in
+ * the main menu, and Contact, so the menu can't link to a page that doesn't exist.
  */
 export function Header({ settings, pages }: { settings: SiteSetting; pages: PageLink[] }) {
   return (
@@ -33,6 +33,9 @@ export function Header({ settings, pages }: { settings: SiteSetting; pages: Page
                 <NavLink href={`/${page.slug}`}>{page.title}</NavLink>
               </li>
             ))}
+            <li>
+              <NavLink href="/contact">Contact</NavLink>
+            </li>
           </ul>
         </nav>
       </div>

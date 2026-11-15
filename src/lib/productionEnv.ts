@@ -19,6 +19,14 @@ export const productionEnvProblems = (env: Record<string, string | undefined>): 
   if ((env.PAYLOAD_SECRET ?? '').length < 32) {
     problems.push('PAYLOAD_SECRET must be set to a random value of at least 32 characters.')
   }
+  if (!env.CRON_SECRET) {
+    problems.push('CRON_SECRET is not set, so old enquiries would never be deleted.')
+  }
+  if (!env.RESEND_API_KEY || !(env.CONTACT_EMAIL ?? '').includes('@')) {
+    problems.push(
+      'RESEND_API_KEY and CONTACT_EMAIL must be set, or the school is never told about enquiries.',
+    )
+  }
   const missingMedia = MEDIA_SETTINGS.filter((name) => !env[name])
   if (missingMedia.length) {
     problems.push(

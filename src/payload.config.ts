@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { resendAdapter } from '@payloadcms/email-resend'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
@@ -45,6 +46,17 @@ export default buildConfig({
     // Push only a local dev database; hosted databases and production use migrations.
     push: shouldPushSchema(process.env),
   }),
+  // Enquiry notifications. Without a key (local development, tests) Payload writes the
+  // email to the console instead of sending it.
+  ...(process.env.RESEND_API_KEY
+    ? {
+        email: resendAdapter({
+          apiKey: process.env.RESEND_API_KEY,
+          defaultFromAddress: process.env.EMAIL_FROM || 'noreply@theabss.org',
+          defaultFromName: 'ABSS website',
+        }),
+      }
+    : {}),
   sharp,
   upload: {
     limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB

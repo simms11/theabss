@@ -1,9 +1,13 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
+import { removeEnquiriesFrom } from '../helpers/enquiries'
+
+const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
+
 // The last three are created by `pnpm seed`, which CI runs before these tests.
 const SEEDED_PAGES = ['/about', '/educational-services', '/school-life']
-const PUBLIC_PAGES = ['/', '/events', '/styleguide', ...SEEDED_PAGES]
+const PUBLIC_PAGES = ['/', '/events', '/contact', '/styleguide', ...SEEDED_PAGES]
 
 test.describe('Frontend', () => {
   test('home page has a real title, one main heading, landmarks and a skip link', async ({
@@ -67,9 +71,7 @@ test.describe('Frontend', () => {
   for (const path of PUBLIC_PAGES) {
     test(`${path} has no automatically detectable accessibility problems`, async ({ page }) => {
       await page.goto(path)
-      const results = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
-        .analyze()
+      const results = await new AxeBuilder({ page }).withTags(WCAG).analyze()
       expect(results.violations.map((v) => `${v.id}: ${v.help}`)).toEqual([])
     })
   }
@@ -95,7 +97,7 @@ test.describe('Frontend', () => {
   test('the school’s core pages are in the menu and carry their quotes', async ({ page }) => {
     await page.goto('/')
     const nav = page.getByRole('navigation', { name: 'Main' })
-    for (const name of ['About', 'Educational Services', 'School Life']) {
+    for (const name of ['About', 'Educational Services', 'School Life', 'Contact']) {
       await expect(nav.getByRole('link', { name, exact: true })).toBeVisible()
     }
 
@@ -116,6 +118,56 @@ test.describe('Frontend', () => {
     expect(response?.status()).toBe(200)
     await expect(page).toHaveURL(/\/about$/)
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('About')
+  })
+
+  test.describe('contact form', () => {
+    const parent = `E2E Parent ${Date.now()}`
+
+    test.afterAll(async () => {
+      await removeEnquiriesFrom(parent)
+    })
+
+    test('lists what to fix, links each problem to its field, and keeps what was typed', async ({
+      page,
+    }) => {
+      await page.goto('/contact')
+      await page.getByLabel('Your name').fill(parent)
+      await page.getByRole('button', { name: 'Send message' }).click()
+
+      const summary = page.getByRole('alert', { name: 'There is a problem' })
+      await expect(summary).toBeFocused()
+      await expect(summary.getByRole('heading', { name: 'There is a problem' })).toBeVisible()
+      await expect(summary.getByRole('link')).toHaveText([
+        'Select what your message is about',
+        'Enter your email address',
+        'Enter your message',
+      ])
+      await expect(page.getByLabel('Your name')).toHaveValue(parent)
+
+      const email = page.getByLabel('Email address')
+      await expect(email).toHaveAttribute('aria-invalid', 'true')
+      await summary.getByRole('link', { name: 'Enter your email address' }).click()
+      await expect(email).toBeFocused()
+
+      // The error state must be as accessible as the empty form.
+      const results = await new AxeBuilder({ page }).withTags(WCAG).analyze()
+      expect(results.violations.map((v) => `${v.id}: ${v.help}`)).toEqual([])
+    })
+
+    test('sends a complete message and confirms it', async ({ page }) => {
+      await page.goto('/contact')
+      await page.getByLabel('A place for my child').check()
+      await page.getByLabel('Your name').fill(parent)
+      await page.getByLabel('Email address').fill('parent@example.com')
+      await page.getByLabel('Your child’s age (optional)').selectOption('8-11')
+      await page.getByLabel('Your message').fill('Do you have a place for a nine year old?')
+      await page.getByRole('button', { name: 'Send message' }).click()
+
+      const confirmation = page.getByRole('status')
+      await expect(confirmation.getByRole('heading', { name: 'Message sent' })).toBeVisible()
+      await expect(confirmation).toBeFocused()
+      await expect(page.getByRole('button', { name: 'Send message' })).toHaveCount(0)
+    })
   })
 
   test('a legacy .html address redirects permanently to its current page', async ({ request }) => {

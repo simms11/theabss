@@ -1,4 +1,5 @@
 import { mediaCdnOrigin, s3UploadOrigin } from './mediaStorage'
+import { TURNSTILE_ORIGIN, turnstileSiteKey } from './turnstile'
 
 /**
  * Security headers for every response, set from next.config.ts so they apply wherever the
@@ -11,7 +12,8 @@ import { mediaCdnOrigin, s3UploadOrigin } from './mediaStorage'
  *  - the media CDN (CloudFront), for images;
  *  - the S3 bucket's own address, only for the admin's direct uploads;
  *  - YouTube's no-cookie player and its thumbnails, for the school's videos;
- *  - Google Maps, framed only, for the map showing where the school is.
+ *  - Google Maps, framed only, for the map showing where the school is;
+ *  - Cloudflare Turnstile, the contact form's human check, only when its keys are set.
  * Dev mode adds what Next's hot reload needs.
  *
  * Framing: only this site may frame its pages, except that FRAME_ANCESTORS can name extra
@@ -35,15 +37,16 @@ const list = (...values: Array<string | null | false>) => values.filter(Boolean)
 export const contentSecurityPolicy = (frameAncestors: string[] = [], env: Env = process.env) => {
   const isDev = env.NODE_ENV !== 'production'
   const cdn = mediaCdnOrigin(env)
+  const turnstile = turnstileSiteKey(env) ? TURNSTILE_ORIGIN : null
   return [
     "default-src 'self'",
-    list("script-src 'self' 'unsafe-inline'", isDev && "'unsafe-eval'"),
+    list("script-src 'self' 'unsafe-inline'", turnstile, isDev && "'unsafe-eval'"),
     "style-src 'self' 'unsafe-inline'",
     list("img-src 'self' data: blob:", cdn, YOUTUBE_THUMBNAILS),
     "font-src 'self' data:",
     list("connect-src 'self'", s3UploadOrigin(env), isDev && 'ws: wss:'),
     list("media-src 'self'", cdn),
-    `frame-src ${YOUTUBE_PLAYER} ${GOOGLE_MAPS}`,
+    list(`frame-src ${YOUTUBE_PLAYER} ${GOOGLE_MAPS}`, turnstile),
     ["frame-ancestors 'self'", ...frameAncestors].join(' '),
     "base-uri 'self'",
     "form-action 'self'",

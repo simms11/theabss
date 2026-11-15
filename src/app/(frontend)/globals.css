@@ -131,6 +131,10 @@
 @utility btn-primary {
   @apply btn bg-gold text-ink hover:bg-paper;
 }
+/* Ink with paper text: 17.4:1. The main action on a paper surface, e.g. a form's submit. */
+@utility btn-solid {
+  @apply btn bg-ink text-paper hover:bg-red-700 disabled:opacity-60;
+}
 @utility btn-outline {
   @apply btn text-fg hover:bg-fg hover:text-bg border-2 border-current bg-transparent;
 }
@@ -173,6 +177,21 @@
 
 @utility skip-link {
   @apply focus:bg-gold focus:text-ink sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-sm focus:px-4 focus:py-2 focus:font-bold;
+}
+
+/* Forms, after the GOV.UK Design System: a bold label above, a hint, then a clearly
+   bordered box. The border is ink (17.4:1 on paper), well over the 3:1 a control needs. */
+@utility field-label {
+  @apply block text-lg font-bold;
+}
+@utility field-hint {
+  @apply text-fg-muted mt-1;
+}
+@utility field-error {
+  @apply text-accent mt-1 font-bold;
+}
+@utility field-input {
+  @apply border-ink bg-bg text-fg aria-invalid:border-accent mt-2 block min-h-11 w-full rounded-sm border-2 px-3 py-2 text-base aria-invalid:border-4;
 }
 
 @utility card {

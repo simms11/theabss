@@ -77,6 +77,29 @@ describe('security headers', () => {
     expect(csp['script-src'].some((s: string) => s.includes('google'))).toBe(false)
   })
 
+  describe('the contact form’s human check', () => {
+    const withTurnstile = parseCsp(
+      contentSecurityPolicy([], {
+        ...PROD,
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY: 'site',
+        TURNSTILE_SECRET_KEY: 'secret',
+      }),
+    )
+
+    it('allows no outside script until it is configured', () => {
+      expect(csp['script-src']).toEqual(["'self'", "'unsafe-inline'"])
+    })
+
+    it('then allows Cloudflare’s script and frame, and nothing else', () => {
+      expect(withTurnstile['script-src']).toEqual([
+        "'self'",
+        "'unsafe-inline'",
+        'https://challenges.cloudflare.com',
+      ])
+      expect(withTurnstile['frame-src']).toContain('https://challenges.cloudflare.com')
+    })
+  })
+
   describe('media storage', () => {
     it('names no storage host until one is configured', () => {
       expect(csp['connect-src']).toEqual(["'self'"])

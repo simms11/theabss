@@ -11,6 +11,8 @@ export const RESERVED_SLUGS = new Set([
   'admin',
   'api',
   'events',
+  'contact',
+  'payment',
   'styleguide',
   'sitemap',
   'robots',

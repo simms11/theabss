@@ -11,7 +11,7 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 - **Events:** date, venue and summary are required text, with an optional flyer. Finished events move to "past" automatically.
 - **Teaching and quotes:** the home page lists each subject taught and carries the quotations the school teaches by, marked up as quotations with their source.
 - **Core pages:** About, Educational Services and School Life, created by the seed and editable in the admin.
-- **Enquiries:** stored with the minimum data, no public API access, readable by admins only.
+- **Contact form:** follows the GOV.UK form patterns, works without JavaScript, and emails the school. It collects the minimum needed to reply; messages are readable by admins only and deleted after 12 months.
 - **Safeguarding:** every photo upload must state whether it shows children; if it does, parental consent must be confirmed before it can be saved.
 - **Location:** one address in Site Settings drives the key facts, the directions link and the map.
 - **Media:** images in a private S3 bucket served through CloudFront; video embedded from YouTube.
@@ -48,13 +48,13 @@ src/
   globals/              SiteSettings: the school's key facts, contact and social links
   fields/               shared fields
   hooks/                cache revalidation
-  lib/                  queries (all data reads), dates, media storage, security headers,
+  lib/                  queries (all data reads), dates, enquiries, maps, media storage, security headers,
                         legacy redirects, production checks, utils
   components/           shared UI components
   app/
     (frontend)/         the public site
     (payload)/          Payload admin + API routes (generated, don't edit)
-    api/                health checks, manual revalidation
+    api/                health checks, manual revalidation, scheduled jobs
 scripts/seed.ts         first admin user and the school's core pages
 tests/int               Vitest unit and database tests
 tests/e2e               Playwright browser tests, including accessibility
@@ -87,7 +87,6 @@ In development the database schema is created automatically and uploads are save
 
 ## Roadmap
 
-- Contact and enrolment form, with email notification to the school
 - Payment page, with card payments through Stripe
 - Remaining pages: Trips, Sports, Finances and Forms
 - Photo gallery with a lightbox; click-to-load YouTube embeds

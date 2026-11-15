@@ -8,6 +8,9 @@ const complete = {
   DATABASE_URL: 'postgres://u:p@db.example.com/abss',
   PAYLOAD_SECRET: 'x'.repeat(32),
   NEXT_PUBLIC_SERVER_URL: 'https://www.theabss.org',
+  CRON_SECRET: 'cron-secret',
+  RESEND_API_KEY: 're_test',
+  CONTACT_EMAIL: 'school@example.com',
   S3_BUCKET: 'abss-media',
   S3_REGION: 'eu-west-2',
   S3_ACCESS_KEY_ID: 'id',
@@ -29,6 +32,16 @@ describe('production settings', () => {
   it('refuses to deploy without media storage', () => {
     const problems = productionEnvProblems({ ...complete, S3_BUCKET: '', MEDIA_CDN_URL: '' })
     expect(problems.join(' ')).toMatch(/S3_BUCKET, MEDIA_CDN_URL not set/)
+  })
+
+  // A form that saves messages nobody is told about, or keeps them for ever, is worse than none.
+  it('refuses to deploy without enquiry notifications or the deletion job', () => {
+    expect(productionEnvProblems({ ...complete, CONTACT_EMAIL: '' }).join(' ')).toMatch(
+      /never told about enquiries/,
+    )
+    expect(productionEnvProblems({ ...complete, CRON_SECRET: '' }).join(' ')).toMatch(
+      /never be deleted/,
+    )
   })
 
   it('refuses a short secret, a non-https site address or a malformed CDN address', () => {

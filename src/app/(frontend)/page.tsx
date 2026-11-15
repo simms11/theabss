@@ -74,12 +74,10 @@ export default async function HomePage() {
             <p className="text-fg-muted mt-5 max-w-2xl text-xl">{settings.tagline}</p>
           )}
           <div className="mt-8 flex flex-wrap gap-3">
-            {settings.contactEmail && (
-              <a href={`mailto:${settings.contactEmail}`} className="btn-primary">
-                Get in touch
-              </a>
-            )}
-            <Link href="/events" className={settings.contactEmail ? 'btn-outline' : 'btn-primary'}>
+            <Link href="/contact" className="btn-primary">
+              Get in touch
+            </Link>
+            <Link href="/events" className="btn-outline">
               See what’s on
             </Link>
           </div>
