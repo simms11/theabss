@@ -22,6 +22,16 @@ const PAIRINGS = [
       ['Gold 700', 'text-gold-700', '4.9:1', 'Labels (plain gold fails here)'],
     ],
   },
+
+  {
+    surface: 'Tint',
+    className: 'tint-section',
+    rows: [
+      ['Ink', 'text-ink', '15.3:1', 'Body text'],
+      ['Stone', 'text-stone', '6.2:1', 'Secondary text'],
+      ['Red', 'text-red', '5.9:1', 'Links, labels'],
+    ],
+  },
   {
     surface: 'Black',
     className: 'dark-section',
@@ -79,9 +89,9 @@ export default function Styleguide() {
             Colour and contrast
           </h2>
           <p className="text-fg-muted mt-2 max-w-2xl">
-            Three surfaces. Each colour is listed only on the surfaces where it passes WCAG AA.
+            Four surfaces. Each colour is listed only on the surfaces where it passes WCAG AA.
           </p>
-          <div className="mt-6 grid gap-5 lg:grid-cols-3">
+          <div className="mt-6 grid gap-5 lg:grid-cols-4">
             {PAIRINGS.map((group) => (
               <div key={group.surface} className={`card p-5 ${group.className}`}>
                 <h3 className="text-display-sm">{group.surface}</h3>

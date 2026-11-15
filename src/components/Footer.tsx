@@ -1,20 +1,12 @@
 import Link from 'next/link'
 
 import type { PageLink } from '@/lib/queries'
+import { socialLinksFrom } from '@/lib/social'
 import type { SiteSetting } from '@/payload-types'
-
-const SOCIAL_LABELS = {
-  instagram: 'Instagram',
-  x: 'X (Twitter)',
-  youtube: 'YouTube',
-  facebook: 'Facebook',
-} as const
 
 export function Footer({ settings, pages }: { settings: SiteSetting; pages: PageLink[] }) {
   const { school, social, contactEmail, phone } = settings
-  const socialLinks = (Object.keys(SOCIAL_LABELS) as Array<keyof typeof SOCIAL_LABELS>).flatMap(
-    (key) => (social?.[key] ? [{ label: SOCIAL_LABELS[key], href: social[key] as string }] : []),
-  )
+  const socialLinks = socialLinksFrom(social)
 
   return (
     <footer className="dark-section">

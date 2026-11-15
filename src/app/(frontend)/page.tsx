@@ -8,6 +8,7 @@ import { VideoEmbed } from '@/components/VideoEmbed'
 import { placeQuery } from '@/lib/maps'
 import { formatPounds, lowestWeeklyFee } from '@/lib/payments'
 import { getSiteSettings, getUpcomingEvents } from '@/lib/queries'
+import { socialLinksFrom } from '@/lib/social'
 import { youtubeId } from '@/lib/youtube'
 import { absoluteUrl, asMedia, cn, mediaSrc, serializeJsonLd } from '@/lib/utils'
 
@@ -53,6 +54,7 @@ export default async function HomePage() {
     description: settings.description ?? undefined,
     foundingDate: school?.founded ? String(school.founded) : undefined,
     email: settings.contactEmail ?? undefined,
+    sameAs: socialLinksFrom(settings.social).map((link) => link.href),
     telephone: settings.phone ?? undefined,
     address: school?.address
       ? { '@type': 'PostalAddress', streetAddress: school.address, addressCountry: 'GB' }
@@ -160,7 +162,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section aria-labelledby="events-heading" className="section">
+      <section aria-labelledby="events-heading" className="tint-section section">
         <div className="container-site">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <h2 id="events-heading" className="text-display-lg">
@@ -190,7 +192,7 @@ export default async function HomePage() {
       </section>
 
       {videos.length > 0 && (
-        <section aria-labelledby="videos-heading" className="section border-line border-t">
+        <section aria-labelledby="videos-heading" className="section">
           <div className="container-site">
             <h2 id="videos-heading" className="text-display-lg">
               See the school in action
@@ -207,7 +209,7 @@ export default async function HomePage() {
       )}
 
       {school?.address && (
-        <section aria-labelledby="find-us-heading" className="section border-line border-t">
+        <section aria-labelledby="find-us-heading" className="tint-section section">
           <div className="container-site">
             <h2 id="find-us-heading" className="text-display-lg">
               Find us

@@ -164,6 +164,13 @@
   --color-focus: var(--color-gold);
 }
 
+/* Tinted paper, to set alternate sections apart without a rule between them. Contrast on
+   sand: ink 15.3:1, stone 6.2:1, red 5.9:1. Cards inside stay paper. */
+@utility tint-section {
+  @apply bg-sand;
+  --color-line: var(--color-mist);
+}
+
 /* The red, gold and green stripe: the school's colours as a shape, not as text. */
 @utility pan-stripe {
   @apply h-1.5 w-full;
@@ -199,6 +206,14 @@
 }
 
 /* Rich text from the CMS (standalone pages) */
+/* In a quotation on a page, the name of who said it is set in italics by the editor. It is
+   shown as a small label in the body face, so it reads as a source, not as more quote. */
+@layer components {
+  .prose-page blockquote em {
+    @apply text-accent mt-2 block font-sans text-base font-bold not-italic;
+  }
+}
+
 @utility prose-page {
   @apply prose prose-lg text-fg prose-headings:font-display prose-headings:font-normal prose-headings:text-fg prose-a:text-accent prose-strong:text-fg prose-blockquote:border-accent prose-blockquote:font-display prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-fg prose-hr:border-line prose-img:rounded-card max-w-prose font-sans;
 }

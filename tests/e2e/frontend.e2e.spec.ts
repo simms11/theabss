@@ -42,6 +42,55 @@ test.describe('Frontend', () => {
     await expect(quotes.first().locator('figcaption')).toContainText('Marcus Mosiah Garvey')
   })
 
+  test('the phone menu opens, marks the current page and closes after a link is followed', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await page.goto('/events')
+    const nav = page.getByRole('navigation', { name: 'Main' })
+    await expect(nav).toBeHidden()
+
+    await page.locator('header summary').click()
+    await expect(nav).toBeVisible()
+    await expect(nav.getByRole('link', { name: 'Events' })).toHaveAttribute('aria-current', 'page')
+
+    await nav.getByRole('link', { name: 'Contact' }).click()
+    await expect(page).toHaveURL(/\/contact$/)
+    await expect(nav).toBeHidden()
+
+    // Escape closes it and returns focus to the button.
+    await page.locator('header summary').click()
+    await expect(nav).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(nav).toBeHidden()
+    await expect(page.locator('header summary')).toBeFocused()
+
+    // Open, it must still pass the accessibility checks.
+    await page.locator('header summary').click()
+    const results = await new AxeBuilder({ page }).withTags(WCAG).analyze()
+    expect(results.violations.map((v) => `${v.id}: ${v.help}`)).toEqual([])
+  })
+
+  test('contact page says where the school is, how to get there and where to follow it', async ({
+    page,
+  }) => {
+    await page.goto('/contact')
+    const visit = page.getByRole('complementary')
+    await expect(visit.getByRole('heading', { name: 'Visit us' })).toBeVisible()
+    await expect(visit.getByText('City Heights E-ACT Academy')).toBeVisible()
+    await expect(visit.getByText(/Buses: 2, 201, 415, 432 and 468/)).toBeVisible()
+    await expect(visit.getByRole('link', { name: 'Get directions' })).toBeVisible()
+    await expect(visit.locator('iframe')).toHaveAttribute('title', /Map showing/)
+    await expect(visit.getByRole('link', { name: 'Instagram' })).toHaveAttribute(
+      'href',
+      'https://www.instagram.com/abss20201/',
+    )
+    await expect(visit.getByRole('link', { name: 'X (Twitter)' })).toHaveAttribute(
+      'href',
+      'https://x.com/ABSS_UK',
+    )
+  })
+
   // Privacy and speed: nothing from YouTube's player loads unless someone presses play.
   test('videos load only when played', async ({ page }) => {
     await page.goto('/')
@@ -102,10 +151,14 @@ test.describe('Frontend', () => {
         () => document.documentElement.scrollWidth - window.innerWidth,
       )
       expect(overflow, 'horizontal scroll').toBeLessThanOrEqual(0)
-      for (const link of await page
-        .getByRole('navigation', { name: 'Main' })
-        .getByRole('link')
-        .all()) {
+      // On a phone the links are behind one Menu button, so the header is a single row.
+      const menu = page.locator('header summary')
+      expect((await menu.boundingBox())?.height, 'menu button height').toBeGreaterThanOrEqual(44)
+      expect((await page.locator('header').boundingBox())?.height, 'header height').toBeLessThan(90)
+      await menu.click()
+      const links = page.getByRole('navigation', { name: 'Main' }).getByRole('link')
+      expect(await links.count()).toBeGreaterThanOrEqual(3)
+      for (const link of await links.all()) {
         const box = await link.boundingBox()
         expect(box?.height, 'tap target height').toBeGreaterThanOrEqual(44)
       }

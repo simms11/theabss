@@ -11,11 +11,17 @@ const httpsUrl: TextFieldSingleValidation = (value) =>
     ? true
     : 'Use the full address, starting with https:// (for example https://instagram.com/yourname).'
 
-const socialLink = (name: string, label: string, placeholder: string): Field => ({
+const socialLink = (
+  name: string,
+  label: string,
+  placeholder: string,
+  defaultValue?: string,
+): Field => ({
   name,
   type: 'text',
   label,
   validate: httpsUrl,
+  ...(defaultValue ? { defaultValue } : {}),
   admin: { placeholder },
 })
 
@@ -172,6 +178,15 @@ export const SiteSettings: GlobalConfig = {
                     description:
                       'Street address and postcode. The map on the home page points here.',
                   },
+                },
+                {
+                  name: 'travel',
+                  type: 'textarea',
+                  maxLength: 400,
+                  label: 'Getting here',
+                  defaultValue:
+                    'Buses: 2, 201, 415, 432 and 468.\nTrains: Tulse Hill station is about 10 minutes’ walk. Walk up the hill towards Brixton and the school is on your left.',
+                  admin: { description: 'Buses, trains and parking. Shown on the Contact page.' },
                 },
                 { name: 'founded', type: 'number', defaultValue: 1997 },
                 {
@@ -424,8 +439,13 @@ export const SiteSettings: GlobalConfig = {
               name: 'social',
               type: 'group',
               fields: [
-                socialLink('instagram', 'Instagram', 'https://instagram.com/...'),
-                socialLink('x', 'X (Twitter)', 'https://x.com/...'),
+                socialLink(
+                  'instagram',
+                  'Instagram',
+                  'https://instagram.com/...',
+                  'https://www.instagram.com/abss20201/',
+                ),
+                socialLink('x', 'X (Twitter)', 'https://x.com/...', 'https://x.com/ABSS_UK'),
                 socialLink('youtube', 'YouTube', 'https://youtube.com/@...'),
                 socialLink('facebook', 'Facebook', 'https://facebook.com/...'),
               ],

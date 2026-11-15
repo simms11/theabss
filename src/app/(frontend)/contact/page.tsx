@@ -4,6 +4,7 @@ import { ContactForm } from '@/components/ContactForm'
 import { LocationMap } from '@/components/LocationMap'
 import { ENQUIRY_RETENTION_MONTHS } from '@/lib/enquiry'
 import { getSiteSettings } from '@/lib/queries'
+import { socialLinksFrom } from '@/lib/social'
 import { turnstileSiteKey } from '@/lib/turnstile'
 
 export const metadata: Metadata = {
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 export default async function ContactPage() {
   const settings = await getSiteSettings()
   const { school, contactEmail, phone } = settings
+  const socialLinks = socialLinksFrom(settings.social)
 
   return (
     <>
@@ -28,7 +30,7 @@ export default async function ContactPage() {
       </section>
 
       <section className="section">
-        <div className="container-site grid gap-12 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <div className="container-site grid gap-x-16 gap-y-12 lg:grid-cols-2">
           <div>
             <h2 className="text-display-md">Send us a message</h2>
             <div className="mt-6">
@@ -39,62 +41,80 @@ export default async function ContactPage() {
             </div>
           </div>
 
-          {(contactEmail || phone || school?.sessions) && (
-            <aside aria-labelledby="other-ways-heading">
-              <h2 id="other-ways-heading" className="text-display-md">
-                Other ways to reach us
-              </h2>
-              <dl className="mt-6 space-y-4">
-                {contactEmail && (
-                  <div>
-                    <dt className="eyebrow text-accent">Email</dt>
-                    <dd>
-                      <a
-                        href={`mailto:${contactEmail}`}
-                        className="inline-flex min-h-11 items-center font-bold"
-                      >
-                        {contactEmail}
-                      </a>
-                    </dd>
-                  </div>
-                )}
-                {phone && (
-                  <div>
-                    <dt className="eyebrow text-accent">Phone</dt>
-                    <dd>
-                      <a
-                        href={`tel:${phone.replace(/[^\d+]/g, '')}`}
-                        className="inline-flex min-h-11 items-center font-bold"
-                      >
-                        {phone}
-                      </a>
-                    </dd>
-                  </div>
-                )}
-                {school?.sessions && (
-                  <div>
-                    <dt className="eyebrow text-accent">In person</dt>
-                    <dd className="mt-1 font-bold">{school.sessions}</dd>
-                  </div>
-                )}
-              </dl>
-            </aside>
-          )}
+          <aside aria-labelledby="visit-heading" className="space-y-10">
+            {school?.address && (
+              <div>
+                <h2 id="visit-heading" className="text-display-md">
+                  Visit us
+                </h2>
+                {school.sessions && <p className="mt-2 font-bold">{school.sessions}</p>}
+                <div className="mt-5">
+                  <LocationMap
+                    venue={school.venue}
+                    address={school.address}
+                    travel={school.travel}
+                    layout="stacked"
+                  />
+                </div>
+              </div>
+            )}
+
+            {(contactEmail || phone || socialLinks.length > 0) && (
+              <div>
+                <h2 className="text-display-md">Other ways to reach us</h2>
+                <dl className="mt-4 space-y-3">
+                  {contactEmail && (
+                    <div>
+                      <dt className="eyebrow text-accent">Email</dt>
+                      <dd>
+                        <a
+                          href={`mailto:${contactEmail}`}
+                          className="inline-flex min-h-11 items-center font-bold"
+                        >
+                          {contactEmail}
+                        </a>
+                      </dd>
+                    </div>
+                  )}
+                  {phone && (
+                    <div>
+                      <dt className="eyebrow text-accent">Phone</dt>
+                      <dd>
+                        <a
+                          href={`tel:${phone.replace(/[^\d+]/g, '')}`}
+                          className="inline-flex min-h-11 items-center font-bold"
+                        >
+                          {phone}
+                        </a>
+                      </dd>
+                    </div>
+                  )}
+                  {socialLinks.length > 0 && (
+                    <div>
+                      <dt className="eyebrow text-accent">Follow us</dt>
+                      <dd>
+                        <ul className="flex flex-wrap gap-x-5">
+                          {socialLinks.map((link) => (
+                            <li key={link.href}>
+                              <a
+                                href={link.href}
+                                rel="noopener noreferrer"
+                                className="inline-flex min-h-11 items-center font-bold"
+                              >
+                                {link.label}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+              </div>
+            )}
+          </aside>
         </div>
       </section>
-
-      {school?.address && (
-        <section aria-labelledby="find-us-heading" className="section border-line border-t">
-          <div className="container-site">
-            <h2 id="find-us-heading" className="text-display-md">
-              Find us
-            </h2>
-            <div className="mt-8">
-              <LocationMap venue={school.venue} address={school.address} />
-            </div>
-          </div>
-        </section>
-      )}
     </>
   )
 }

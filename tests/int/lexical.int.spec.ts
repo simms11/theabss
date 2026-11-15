@@ -4,7 +4,7 @@ import { PAGES } from '../../scripts/content/pages'
 import { toLexical } from '../../scripts/lib/lexical'
 import { LEGACY_PAGES } from '../../src/lib/legacyRedirects'
 
-type Node = { type: string; tag?: string; text?: string; children?: Node[] }
+type Node = { type: string; tag?: string; text?: string; format?: number; children?: Node[] }
 
 const nodes = (source: string) => toLexical(source).root.children as Node[]
 const text = (node: Node): string =>
@@ -17,6 +17,9 @@ describe('seeded page content', () => {
     expect(quote.type).toBe('quote')
     expect(text(quote)).toBe('Words worth keeping.\n— Who said them')
     expect(paragraph.type).toBe('paragraph')
+    // The source line is italic, which the site styles as a label under the quote.
+    const formats = (quote.children ?? []).filter((n) => n.type === 'text').map((n) => n.format)
+    expect(formats).toEqual([0, 2])
   })
 
   it('turns headings, lists and paragraphs into their own blocks', () => {

@@ -5,6 +5,7 @@ import * as migration_20261115_210838_payments from './20261115_210838_payments'
 import * as migration_20261115_211930_videos from './20261115_211930_videos';
 import * as migration_20261115_213221_remove_cost_text from './20261115_213221_remove_cost_text';
 import * as migration_20261115_213224_fees from './20261115_213224_fees';
+import * as migration_20261115_214136_travel_and_social from './20261115_214136_travel_and_social';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20261115_213224_fees.up,
     down: migration_20261115_213224_fees.down,
-    name: '20261115_213224_fees'
+    name: '20261115_213224_fees',
+  },
+  {
+    up: migration_20261115_214136_travel_and_social.up,
+    down: migration_20261115_214136_travel_and_social.down,
+    name: '20261115_214136_travel_and_social'
   },
 ];

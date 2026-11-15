@@ -1,10 +1,12 @@
 /**
  * Turns simple text into Payload's rich-text (Lexical) format, for seeding editable pages.
  * Supports "## " and "### " headings, "- " bullet lists, "> " quotations (one line of the
- * quote per source line, e.g. the words and then who said them), **bold**, and blank-line
- * paragraphs.
+ * quote per source line; a line starting with "— " is who said it, and is set in italics so
+ * the site can style it as the source), **bold**, and blank-line paragraphs.
  */
 type Node = Record<string, unknown>
+
+const ITALIC = 2
 
 const base = { version: 1, format: '', indent: 0, direction: 'ltr' as const }
 
@@ -41,7 +43,9 @@ export const toLexical = (source: string) => {
         type: 'quote',
         children: lines.flatMap((l, i) => [
           ...(i > 0 ? [{ type: 'linebreak', version: 1 }] : []),
-          ...inline(l.slice(2)),
+          ...inline(l.slice(2)).map((node) =>
+            l.startsWith('> — ') ? { ...node, format: ITALIC } : node,
+          ),
         ]),
       })
     } else if (lines.every((l) => l.startsWith('- '))) {

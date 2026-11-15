@@ -669,6 +669,10 @@ export interface SiteSetting {
      * Street address and postcode. The map on the home page points here.
      */
     address?: string | null;
+    /**
+     * Buses, trains and parking. Shown on the Contact page.
+     */
+    travel?: string | null;
     founded?: number | null;
     history?: string | null;
   };
@@ -796,6 +800,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         subjects?: T;
         venue?: T;
         address?: T;
+        travel?: T;
         founded?: T;
         history?: T;
       };
