@@ -7,10 +7,11 @@ const LABELS = {
   facebook: 'Facebook',
 } as const
 
+export type SocialNetwork = keyof typeof LABELS
+export type SocialLink = { network: SocialNetwork; label: string; href: string }
+
 /** The school's social accounts that have an address set, in a fixed order. */
-export const socialLinksFrom = (
-  social: SiteSetting['social'],
-): Array<{ label: string; href: string }> =>
+export const socialLinksFrom = (social: SiteSetting['social']): SocialLink[] =>
   (Object.keys(LABELS) as Array<keyof typeof LABELS>).flatMap((key) =>
-    social?.[key] ? [{ label: LABELS[key], href: social[key] as string }] : [],
+    social?.[key] ? [{ network: key, label: LABELS[key], href: social[key] as string }] : [],
   )

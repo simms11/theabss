@@ -2,7 +2,7 @@ import type { Field, GlobalConfig, TextFieldSingleValidation } from 'payload'
 
 import { admins, anyone } from '@/access'
 import { revalidateSettings } from '@/hooks/revalidate'
-import { isStripePaymentLink } from '@/lib/payments'
+import { isPaymentLink } from '@/lib/payments'
 import { youtubeId } from '@/lib/youtube'
 
 /** Social links must be full addresses: "@handle" would become a broken link in the footer. */
@@ -302,7 +302,7 @@ export const SiteSettings: GlobalConfig = {
         {
           label: 'Payments',
           description:
-            'The Payment page. Card payments go through Stripe; bank details are shown as text.',
+            'The Fees and payment page. Online payments go through GoCardless; bank details are shown as text.',
           fields: [
             {
               name: 'payments',
@@ -376,10 +376,10 @@ export const SiteSettings: GlobalConfig = {
                   name: 'links',
                   type: 'array',
                   maxRows: 12,
-                  labels: { singular: 'Card payment', plural: 'Card payments' },
+                  labels: { singular: 'Online payment', plural: 'Online payments' },
                   admin: {
                     description:
-                      'One button per payment. Create a Payment Link in the Stripe dashboard and paste its address here.',
+                      'One button per payment. Create a payment link in the GoCardless dashboard and paste its address here.',
                   },
                   fields: [
                     {
@@ -393,12 +393,12 @@ export const SiteSettings: GlobalConfig = {
                       name: 'url',
                       type: 'text',
                       required: true,
-                      label: 'Stripe payment link',
+                      label: 'GoCardless payment link',
                       validate: (value: string | null | undefined) =>
-                        isStripePaymentLink(value)
+                        isPaymentLink(value)
                           ? true
-                          : 'Paste a Stripe Payment Link. It starts with https://buy.stripe.com/ or https://donate.stripe.com/',
-                      admin: { placeholder: 'https://buy.stripe.com/...' },
+                          : 'Paste a GoCardless payment link. It starts with https://pay.gocardless.com/',
+                      admin: { placeholder: 'https://pay.gocardless.com/...' },
                     },
                   ],
                 },

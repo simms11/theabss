@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import { ContactForm } from '@/components/ContactForm'
 import { LocationMap } from '@/components/LocationMap'
+import { SocialLinks } from '@/components/SocialLinks'
 import { ENQUIRY_RETENTION_MONTHS } from '@/lib/enquiry'
 import { getSiteSettings } from '@/lib/queries'
 import { socialLinksFrom } from '@/lib/social'
@@ -93,19 +94,7 @@ export default async function ContactPage() {
                     <div>
                       <dt className="eyebrow text-accent">Follow us</dt>
                       <dd>
-                        <ul className="flex flex-wrap gap-x-5">
-                          {socialLinks.map((link) => (
-                            <li key={link.href}>
-                              <a
-                                href={link.href}
-                                rel="noopener noreferrer"
-                                className="inline-flex min-h-11 items-center font-bold"
-                              >
-                                {link.label}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
+                        <SocialLinks links={socialLinks} className="mt-1" />
                       </dd>
                     </div>
                   )}

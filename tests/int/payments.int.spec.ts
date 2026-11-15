@@ -4,28 +4,29 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import config from '@/payload.config'
 import { DEFAULT_FEES } from '@/globals/SiteSettings'
-import { formatPounds, formatSortCode, isStripePaymentLink, lowestWeeklyFee } from '@/lib/payments'
+import { formatPounds, formatSortCode, isPaymentLink, lowestWeeklyFee } from '@/lib/payments'
 
-describe('card payment links', () => {
-  it('accepts Stripe’s own payment pages', () => {
-    expect(isStripePaymentLink('https://buy.stripe.com/test_abc123')).toBe(true)
-    expect(isStripePaymentLink(' https://donate.stripe.com/abc123 ')).toBe(true)
+describe('online payment links', () => {
+  it('accepts GoCardless’s own payment pages', () => {
+    expect(isPaymentLink('https://pay.gocardless.com/BRT0001ABCDEFGH')).toBe(true)
+    expect(isPaymentLink(' https://pay.gocardless.com/billing/static/flow?id=BRF123 ')).toBe(true)
   })
 
-  // The button sends parents away to pay: it must only ever go to Stripe.
+  // The button sends parents away to pay: it must only ever go to GoCardless.
   it('refuses look-alikes, other sites, plain http and anything that is not a link', () => {
     for (const value of [
-      'https://buy.stripe.com.evil.example/abc',
-      'https://stripe.com.example/buy',
-      'https://example.com/?next=https://buy.stripe.com/abc',
-      'http://buy.stripe.com/abc',
-      'https://buy.stripe.com/',
+      'https://pay.gocardless.com.evil.example/abc',
+      'https://gocardless.com.example/pay',
+      'https://example.com/?next=https://pay.gocardless.com/abc',
+      'http://pay.gocardless.com/abc',
+      'https://pay.gocardless.com/',
+      'https://gocardless.com/abc',
       'javascript:alert(1)',
-      'buy.stripe.com/abc',
+      'pay.gocardless.com/abc',
       '',
       null,
     ]) {
-      expect(isStripePaymentLink(value), String(value)).toBe(false)
+      expect(isPaymentLink(value), String(value)).toBe(false)
     }
   })
 
@@ -77,7 +78,7 @@ describe('payment settings', () => {
     })
   })
 
-  it('will not save a card payment that does not go to Stripe', async () => {
+  it('will not save an online payment that does not go to GoCardless', async () => {
     await expect(
       payload.updateGlobal({
         slug: 'site-settings',
@@ -87,11 +88,13 @@ describe('payment settings', () => {
     ).rejects.toThrow()
   })
 
-  it('saves a Stripe payment link', async () => {
+  it('saves a GoCardless payment link', async () => {
     const saved = await payload.updateGlobal({
       slug: 'site-settings',
       data: {
-        payments: { links: [{ label: 'Term fees', url: 'https://buy.stripe.com/test_abc123' }] },
+        payments: {
+          links: [{ label: 'Term fees', url: 'https://pay.gocardless.com/BRT0001ABCDEFGH' }],
+        },
       },
       context,
     })

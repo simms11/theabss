@@ -1,19 +1,24 @@
 /**
- * Paying the school: by card through Stripe, or by bank transfer.
+ * Paying the school: online from a bank account through GoCardless, or by bank transfer.
  *
- * Card payments use Stripe Payment Links. The school creates a link in its Stripe dashboard
- * (for term fees, a trip, a donation) and pastes it into Site Settings; the site shows it as
- * a button. Card details are typed on Stripe's own page, never on this site, so the site
- * holds no payment data and needs no Stripe keys or scripts.
+ * Online payments use GoCardless payment links ("Pay by Bank"). The school creates a link in
+ * its GoCardless dashboard (for term fees, a trip, a donation) and pastes it into Site
+ * Settings; the site shows it as a button. One press takes a parent to GoCardless, where
+ * they pick their bank and approve the payment in their banking app, with the amount and
+ * payee already filled in. A Direct Debit link, for fees collected automatically, works the
+ * same way. Nothing is typed on this site, so it holds no payment data and needs no keys
+ * or scripts.
  */
-const STRIPE_HOSTS = new Set(['buy.stripe.com', 'donate.stripe.com'])
+const PAYMENT_LINK_HOSTS = new Set(['pay.gocardless.com'])
 
-/** Only Stripe's own payment pages may be linked: a typo or a look-alike address is refused. */
-export const isStripePaymentLink = (value: unknown): boolean => {
+/** Only GoCardless's own payment pages may be linked: a typo or look-alike is refused. */
+export const isPaymentLink = (value: unknown): boolean => {
   if (typeof value !== 'string') return false
   try {
     const url = new URL(value.trim())
-    return url.protocol === 'https:' && STRIPE_HOSTS.has(url.hostname) && url.pathname.length > 1
+    return (
+      url.protocol === 'https:' && PAYMENT_LINK_HOSTS.has(url.hostname) && url.pathname.length > 1
+    )
   } catch {
     return false
   }

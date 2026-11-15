@@ -739,7 +739,7 @@ export interface SiteSetting {
       notes?: string | null;
     };
     /**
-     * One button per payment. Create a Payment Link in the Stripe dashboard and paste its address here.
+     * One button per payment. Create a payment link in the GoCardless dashboard and paste its address here.
      */
     links?:
       | {

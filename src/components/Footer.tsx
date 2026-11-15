@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import type { PageLink } from '@/lib/queries'
+import { SocialLinks } from '@/components/SocialLinks'
 import { socialLinksFrom } from '@/lib/social'
 import type { SiteSetting } from '@/payload-types'
 
@@ -15,6 +16,7 @@ export function Footer({ settings, pages }: { settings: SiteSetting; pages: Page
         <div>
           <h2 className="text-display-sm">{settings.siteName}</h2>
           {settings.tagline && <p className="text-fg-muted mt-2">{settings.tagline}</p>}
+          <SocialLinks links={socialLinks} className="mt-4" />
         </div>
 
         <div>
@@ -63,17 +65,6 @@ export function Footer({ settings, pages }: { settings: SiteSetting; pages: Page
                 <Link href={`/${page.slug}`} className="inline-flex min-h-11 items-center">
                   {page.title}
                 </Link>
-              </li>
-            ))}
-            {socialLinks.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-11 items-center"
-                >
-                  {link.label}
-                </a>
               </li>
             ))}
           </ul>

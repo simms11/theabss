@@ -1,13 +1,15 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { formatPounds, formatSortCode, isStripePaymentLink, lowestWeeklyFee } from '@/lib/payments'
+import { CopyButton } from '@/components/CopyButton'
+
+import { formatPounds, formatSortCode, isPaymentLink, lowestWeeklyFee } from '@/lib/payments'
 import { getSiteSettings } from '@/lib/queries'
 
 export const metadata: Metadata = {
   title: 'Fees and payment',
   description:
-    'What the Afruika Bantu Saturday School costs, and how to pay fees or donate by card or bank transfer.',
+    'What the Afruika Bantu Saturday School costs, and how to pay fees or donate online or by bank transfer.',
 }
 
 /**
@@ -20,14 +22,23 @@ export default async function PaymentPage() {
   const rows = fees?.rows ?? []
   const lowest = lowestWeeklyFee(rows)
 
-  // Checked again here, not only in the admin: a link is only ever rendered if it is Stripe's.
-  const links = (payments?.links ?? []).filter((link) => isStripePaymentLink(link.url))
+  // Checked again here, not only in the admin: a link is only ever rendered if it is GoCardless's.
+  const links = (payments?.links ?? []).filter((link) => isPaymentLink(link.url))
   const bank = payments?.bank
+  // `copy` is what goes on the clipboard: digits only for the numbers, as banking apps expect.
   const bankRows = [
-    { label: 'Account name', value: bank?.accountName },
+    { label: 'Account name', value: bank?.accountName, copy: bank?.accountName },
     { label: 'Bank', value: bank?.bankName },
-    { label: 'Sort code', value: bank?.sortCode ? formatSortCode(bank.sortCode) : null },
-    { label: 'Account number', value: bank?.accountNumber },
+    {
+      label: 'Sort code',
+      value: bank?.sortCode ? formatSortCode(bank.sortCode) : null,
+      copy: bank?.sortCode?.replace(/\D/g, ''),
+    },
+    {
+      label: 'Account number',
+      value: bank?.accountNumber,
+      copy: bank?.accountNumber?.replace(/\D/g, ''),
+    },
     { label: 'Reference', value: bank?.reference },
   ].filter((row) => row.value)
   const hasBank = Boolean(bank?.sortCode && bank?.accountNumber)
@@ -136,10 +147,11 @@ export default async function PaymentPage() {
             <div className="mt-6 grid gap-6 lg:grid-cols-2">
               {links.length > 0 && (
                 <div className="card p-6">
-                  <h3 className="text-display-sm">By card</h3>
+                  <h3 className="text-display-sm">Online, from your bank</h3>
                   <p className="text-fg-muted mt-2">
-                    Card payments are taken by Stripe on its own secure page. We never see or store
-                    your card details.
+                    One press takes you to GoCardless, where you choose your bank and approve the
+                    payment in your banking app. The amount and our details are filled in for you,
+                    and no card is needed.
                   </p>
                   <ul className="mt-5 space-y-5">
                     {links.map((link) => (
@@ -147,8 +159,8 @@ export default async function PaymentPage() {
                         <p className="font-bold">{link.label}</p>
                         {link.description && <p className="text-fg-muted">{link.description}</p>}
                         <a href={link.url} rel="noopener noreferrer" className="btn-solid mt-2">
-                          Pay by card
-                          <span className="sr-only"> for {link.label} (opens Stripe)</span>
+                          Pay online
+                          <span className="sr-only"> for {link.label} (opens GoCardless)</span>
                         </a>
                       </li>
                     ))}
@@ -158,12 +170,21 @@ export default async function PaymentPage() {
 
               {hasBank && (
                 <div className="card p-6">
-                  <h3 className="text-display-sm">By bank transfer</h3>
+                  <h3 className="text-display-sm">By bank transfer or standing order</h3>
+                  <p className="text-fg-muted mt-2">
+                    Free to send from your own banking app. Copy each detail across.
+                  </p>
                   <dl className="mt-3 divide-y divide-(--color-line)">
                     {bankRows.map((row) => (
-                      <div key={row.label} className="flex flex-wrap justify-between gap-x-6 py-3">
+                      <div
+                        key={row.label}
+                        className="flex flex-wrap items-center justify-between gap-x-4 py-2"
+                      >
                         <dt className="text-fg-muted">{row.label}</dt>
-                        <dd className="font-bold select-all">{row.value}</dd>
+                        <dd className="flex items-center gap-3 font-bold">
+                          <span className="select-all">{row.value}</span>
+                          {row.copy && <CopyButton value={row.copy} label={row.label} />}
+                        </dd>
                       </div>
                     ))}
                   </dl>
