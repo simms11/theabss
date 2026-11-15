@@ -7,7 +7,7 @@ const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
 
 // The last three are created by `pnpm seed`, which CI runs before these tests.
 const SEEDED_PAGES = ['/about', '/educational-services', '/school-life']
-const PUBLIC_PAGES = ['/', '/events', '/contact', '/styleguide', ...SEEDED_PAGES]
+const PUBLIC_PAGES = ['/', '/events', '/contact', '/payment', '/styleguide', ...SEEDED_PAGES]
 
 test.describe('Frontend', () => {
   test('home page has a real title, one main heading, landmarks and a skip link', async ({
@@ -118,6 +118,18 @@ test.describe('Frontend', () => {
     expect(response?.status()).toBe(200)
     await expect(page).toHaveURL(/\/about$/)
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('About')
+  })
+
+  // Nothing is configured in a fresh database, so the page must still be useful.
+  test('payment page points to the contact form until payment details are added', async ({
+    page,
+  }) => {
+    await page.goto('/payment')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Payment')
+    await expect(page.getByRole('main').getByRole('link', { name: 'Contact us' })).toHaveAttribute(
+      'href',
+      '/contact',
+    )
   })
 
   test.describe('contact form', () => {

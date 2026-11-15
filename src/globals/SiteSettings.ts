@@ -2,6 +2,7 @@ import type { Field, GlobalConfig, TextFieldSingleValidation } from 'payload'
 
 import { admins, anyone } from '@/access'
 import { revalidateSettings } from '@/hooks/revalidate'
+import { isStripePaymentLink } from '@/lib/payments'
 
 /** Social links must be full addresses: "@handle" would become a broken link in the footer. */
 const httpsUrl: TextFieldSingleValidation = (value) =>
@@ -219,6 +220,75 @@ export const SiteSettings: GlobalConfig = {
                   text: 'Up, you mighty race, for you can accomplish what you will.',
                   attribution: 'The Honourable Marcus Mosiah Garvey',
                 }),
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Payments',
+          description:
+            'The Payment page. Card payments go through Stripe; bank details are shown as text.',
+          fields: [
+            {
+              name: 'payments',
+              type: 'group',
+              fields: [
+                {
+                  name: 'intro',
+                  type: 'textarea',
+                  maxLength: 400,
+                  defaultValue: 'You can pay fees or make a donation by card or by bank transfer.',
+                },
+                {
+                  name: 'links',
+                  type: 'array',
+                  maxRows: 12,
+                  labels: { singular: 'Card payment', plural: 'Card payments' },
+                  admin: {
+                    description:
+                      'One button per payment. Create a Payment Link in the Stripe dashboard and paste its address here.',
+                  },
+                  fields: [
+                    {
+                      name: 'label',
+                      type: 'text',
+                      required: true,
+                      admin: { description: 'What it pays for, e.g. “Term fees” or “Donate”.' },
+                    },
+                    { name: 'description', type: 'text', maxLength: 160 },
+                    {
+                      name: 'url',
+                      type: 'text',
+                      required: true,
+                      label: 'Stripe payment link',
+                      validate: (value: string | null | undefined) =>
+                        isStripePaymentLink(value)
+                          ? true
+                          : 'Paste a Stripe Payment Link. It starts with https://buy.stripe.com/ or https://donate.stripe.com/',
+                      admin: { placeholder: 'https://buy.stripe.com/...' },
+                    },
+                  ],
+                },
+                {
+                  name: 'bank',
+                  type: 'group',
+                  label: 'Bank transfer',
+                  admin: { description: 'Shown as text on the Payment page. Leave empty to hide.' },
+                  fields: [
+                    { name: 'accountName', type: 'text' },
+                    { name: 'bankName', type: 'text' },
+                    { name: 'sortCode', type: 'text' },
+                    { name: 'accountNumber', type: 'text' },
+                    {
+                      name: 'reference',
+                      type: 'text',
+                      label: 'Payment reference',
+                      admin: {
+                        description: 'What to put as the reference, e.g. “Your child’s initials”.',
+                      },
+                    },
+                  ],
+                },
               ],
             },
           ],

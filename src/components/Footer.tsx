@@ -53,31 +53,39 @@ export function Footer({ settings, pages }: { settings: SiteSetting; pages: Page
           </address>
         </div>
 
-        {(pages.length > 0 || socialLinks.length > 0) && (
-          <nav aria-label="Footer">
-            <h2 className="eyebrow text-accent">More</h2>
-            <ul className="mt-1">
-              {pages.map((page) => (
-                <li key={page.id}>
-                  <Link href={`/${page.slug}`} className="inline-flex min-h-11 items-center">
-                    {page.title}
-                  </Link>
-                </li>
-              ))}
-              {socialLinks.map((link) => (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    rel="noopener noreferrer"
-                    className="inline-flex min-h-11 items-center"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        )}
+        <nav aria-label="Footer">
+          <h2 className="eyebrow text-accent">More</h2>
+          <ul className="mt-1">
+            {[
+              { href: '/contact', label: 'Contact' },
+              { href: '/payment', label: 'Payment' },
+            ].map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className="inline-flex min-h-11 items-center">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+            {pages.map((page) => (
+              <li key={page.id}>
+                <Link href={`/${page.slug}`} className="inline-flex min-h-11 items-center">
+                  {page.title}
+                </Link>
+              </li>
+            ))}
+            {socialLinks.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-11 items-center"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
       <div className="border-line border-t">
         <p className="container-site text-fg-muted py-4 text-sm">

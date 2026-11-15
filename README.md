@@ -12,6 +12,7 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 - **Teaching and quotes:** the home page lists each subject taught and carries the quotations the school teaches by, marked up as quotations with their source.
 - **Core pages:** About, Educational Services and School Life, created by the seed and editable in the admin.
 - **Contact form:** follows the GOV.UK form patterns, works without JavaScript, and emails the school. It collects the minimum needed to reply; messages are readable by admins only and deleted after 12 months.
+- **Payments:** card payments through Stripe Payment Links, so no card data touches the site, plus bank details as text.
 - **Safeguarding:** every photo upload must state whether it shows children; if it does, parental consent must be confirmed before it can be saved.
 - **Location:** one address in Site Settings drives the key facts, the directions link and the map.
 - **Media:** images in a private S3 bucket served through CloudFront; video embedded from YouTube.
@@ -87,7 +88,6 @@ In development the database schema is created automatically and uploads are save
 
 ## Roadmap
 
-- Payment page, with card payments through Stripe
 - Remaining pages: Trips, Sports, Finances and Forms
 - Photo gallery with a lightbox; click-to-load YouTube embeds
 - Event filters, "add to calendar" and event structured data

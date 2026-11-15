@@ -703,6 +703,36 @@ export interface SiteSetting {
       attribution?: string | null;
     };
   };
+  payments?: {
+    intro?: string | null;
+    /**
+     * One button per payment. Create a Payment Link in the Stripe dashboard and paste its address here.
+     */
+    links?:
+      | {
+          /**
+           * What it pays for, e.g. “Term fees” or “Donate”.
+           */
+          label: string;
+          description?: string | null;
+          url: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Shown as text on the Payment page. Leave empty to hide.
+     */
+    bank?: {
+      accountName?: string | null;
+      bankName?: string | null;
+      sortCode?: string | null;
+      accountNumber?: string | null;
+      /**
+       * What to put as the reference, e.g. “Your child’s initials”.
+       */
+      reference?: string | null;
+    };
+  };
   /**
    * Shown on the site as a link parents can tap.
    */
@@ -768,6 +798,28 @@ export interface SiteSettingsSelect<T extends boolean = true> {
           | {
               text?: T;
               attribution?: T;
+            };
+      };
+  payments?:
+    | T
+    | {
+        intro?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              description?: T;
+              url?: T;
+              id?: T;
+            };
+        bank?:
+          | T
+          | {
+              accountName?: T;
+              bankName?: T;
+              sortCode?: T;
+              accountNumber?: T;
+              reference?: T;
             };
       };
   contactEmail?: T;
