@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import React from 'react'
 
@@ -52,6 +53,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           {children}
         </main>
         <Footer settings={settings} pages={pages.filter((p) => p.navigation !== 'none')} />
+        {/* Visit counts for the live site only: no cookies, no personal data, nothing that
+            follows a visitor between sites. Not loaded locally, in tests or on previews. */}
+        {process.env.VERCEL_ENV === 'production' && <Analytics />}
       </body>
     </html>
   )

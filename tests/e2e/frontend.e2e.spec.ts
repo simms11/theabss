@@ -158,6 +158,18 @@ test.describe('Frontend', () => {
     expect(own).toEqual([])
   })
 
+  // Visit counting is for the live site only, and never a third-party tracker.
+  test('no analytics script is loaded outside the live site', async ({ page }) => {
+    await page.goto('/')
+    const scripts = await page
+      .locator('script[src]')
+      .evaluateAll((nodes) => nodes.map((node) => (node as HTMLScriptElement).src))
+    expect(
+      scripts.filter((src) => /_vercel|insights|analytics|gtag|googletagmanager/.test(src)),
+    ).toEqual([])
+    expect(scripts.every((src) => new URL(src).origin === new URL(page.url()).origin)).toBe(true)
+  })
+
   test('the contact form links to a privacy notice that says what is kept and for how long', async ({
     page,
   }) => {

@@ -115,7 +115,7 @@ When you use the contact form we collect your name, your email address, your mes
 
 ## Cookies and tracking
 
-This website itself sets no cookies for visitors and we do not use analytics or advertising trackers. The only cookie of our own is the one that keeps school staff signed in to the site’s admin area. The Google map on some pages may set Google’s cookies, as described below.
+This website itself sets no cookies for visitors and uses no advertising trackers. We count visits to each page with a privacy-friendly tool that sets no cookies, does not identify you and does not follow you to other sites. The only cookie of our own is the one that keeps school staff signed in to the site’s admin area. The Google map on some pages may set Google’s cookies, as described below.
 
 ## Maps, videos and payments
 

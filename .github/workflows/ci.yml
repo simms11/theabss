@@ -89,6 +89,46 @@ jobs:
             exit 1
           fi
 
+  performance:
+    name: Lighthouse budgets
+    runs-on: ubuntu-latest
+    needs: quality
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: abss_online
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/abss_online
+      PAYLOAD_SECRET: ci-secret
+      NEXT_PUBLIC_SERVER_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm seed
+      # Builds for production, serves it, and loads five pages three times each on a
+      # simulated slow phone. Fails if a page drops below the budgets in lighthouserc.json:
+      # performance, accessibility, SEO, largest paint, layout shift and blocking time.
+      - run: pnpm test:perf
+        env:
+          NODE_ENV: production
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/reports/
+          retention-days: 7
+
   e2e:
     name: Playwright
     runs-on: ubuntu-latest
