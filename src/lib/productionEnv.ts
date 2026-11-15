@@ -6,7 +6,6 @@
  */
 const MEDIA_SETTINGS = [
   'S3_BUCKET',
-  'S3_REGION',
   'S3_ACCESS_KEY_ID',
   'S3_SECRET_ACCESS_KEY',
   'MEDIA_CDN_URL',
@@ -32,6 +31,9 @@ export const productionEnvProblems = (env: Record<string, string | undefined>): 
     problems.push(
       `${missingMedia.join(', ')} not set, so uploads would be lost on the next deploy.`,
     )
+  }
+  if (env.S3_ENDPOINT && !/^https:\/\/[^/]+$/.test(env.S3_ENDPOINT)) {
+    problems.push('S3_ENDPOINT must be an https:// address with no trailing slash.')
   }
   if (env.MEDIA_CDN_URL && !/^https:\/\/[^/]+$/.test(env.MEDIA_CDN_URL)) {
     problems.push('MEDIA_CDN_URL must be an https:// address with no trailing slash.')

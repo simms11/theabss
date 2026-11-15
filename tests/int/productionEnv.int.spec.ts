@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
-import { mediaCdnOrigin, mediaFileUrl, s3Enabled } from '../../src/lib/mediaStorage'
+import {
+  mediaCdnOrigin,
+  mediaFileUrl,
+  s3Enabled,
+  s3Endpoint,
+  s3Region,
+  s3UploadOrigin,
+} from '../../src/lib/mediaStorage'
 import { productionEnvProblems } from '../../src/lib/productionEnv'
 
 const complete = {
@@ -12,10 +19,10 @@ const complete = {
   RESEND_API_KEY: 're_test',
   CONTACT_EMAIL: 'school@example.com',
   S3_BUCKET: 'abss-media',
-  S3_REGION: 'eu-west-2',
+  S3_ENDPOINT: 'https://0123456789abcdef.r2.cloudflarestorage.com',
   S3_ACCESS_KEY_ID: 'id',
   S3_SECRET_ACCESS_KEY: 'secret',
-  MEDIA_CDN_URL: 'https://d111111abcdef8.cloudfront.net',
+  MEDIA_CDN_URL: 'https://media.example.org',
 }
 
 describe('production settings', () => {
@@ -55,6 +62,27 @@ describe('production settings', () => {
   })
 })
 
+describe('storage service', () => {
+  it('works with Cloudflare R2: its own endpoint, the bucket in the path, region "auto"', () => {
+    expect(s3Endpoint(complete)).toBe('https://0123456789abcdef.r2.cloudflarestorage.com')
+    expect(s3Region(complete)).toBe('auto')
+    expect(s3UploadOrigin(complete)).toBe('https://0123456789abcdef.r2.cloudflarestorage.com')
+  })
+
+  it('works with Amazon S3 when no endpoint is set', () => {
+    const aws = { S3_BUCKET: 'abss-media', S3_REGION: 'eu-west-2' }
+    expect(s3Endpoint(aws)).toBeNull()
+    expect(s3Region(aws)).toBe('eu-west-2')
+    expect(s3UploadOrigin(aws)).toBe('https://abss-media.s3.eu-west-2.amazonaws.com')
+  })
+
+  it('refuses a deploy whose endpoint is not a plain https address', () => {
+    expect(
+      productionEnvProblems({ ...complete, S3_ENDPOINT: 'https://example.com/bucket' }),
+    ).toHaveLength(1)
+  })
+})
+
 describe('media storage', () => {
   it('is off until a bucket is configured, so development uses local disk', () => {
     expect(s3Enabled({})).toBe(false)
@@ -63,7 +91,7 @@ describe('media storage', () => {
 
   it('serves files from the CDN, under the media folder', () => {
     expect(mediaFileUrl('sports day.webp', 'media', complete)).toBe(
-      'https://d111111abcdef8.cloudfront.net/media/sports%20day.webp',
+      'https://media.example.org/media/sports%20day.webp',
     )
   })
 

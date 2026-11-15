@@ -9,7 +9,7 @@ import { TURNSTILE_ORIGIN, turnstileSiteKey } from './turnstile'
  * 'unsafe-inline'. A nonce-based policy would force every page to render on demand and lose
  * static speed, a poor trade for a brochure site. Everything else is locked to this site plus
  * three named exceptions:
- *  - the media CDN (CloudFront), for images;
+ *  - the media CDN, for images;
  *  - the S3 bucket's own address, only for the admin's direct uploads;
  *  - YouTube's no-cookie player and its thumbnails, for the school's videos;
  *  - Google Maps, framed only, for the map showing where the school is;

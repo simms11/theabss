@@ -14,7 +14,7 @@ export const mediaSrc = (media: Media | null, size?: keyof NonNullable<Media['si
   const sized = size ? media.sizes?.[size] : undefined
   const url = sized?.url || media.url || ''
   // Payload prefixes local uploads with serverURL; make them relative so they match
-  // images.localPatterns in next.config. CloudFront URLs (another host) pass through.
+  // images.localPatterns in next.config. CDN URLs (another host) pass through.
   const origin = process.env.NEXT_PUBLIC_SERVER_URL
   return origin && url.startsWith(`${origin}/`) ? url.slice(origin.length) : url
 }

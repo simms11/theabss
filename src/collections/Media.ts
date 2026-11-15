@@ -30,7 +30,7 @@ export const Media: CollectionConfig = {
     delete: admins,
   },
   upload: {
-    // Local disk in dev; a private S3 bucket behind CloudFront in production.
+    // Local disk in dev; an S3-compatible bucket served from its CDN address in production.
     staticDir: 'media',
     mimeTypes: ['image/*'],
     focalPoint: true,

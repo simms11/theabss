@@ -15,7 +15,7 @@ export const DOCUMENT_CATEGORIES = [
  *
  * PDF and Word files only. Each file is uploaded on its own (not as a zip), so a parent can
  * open it on a phone and a screen reader can announce what it is. Stored on local disk in
- * development and in the private S3 bucket in production, like images.
+ * development and in the storage bucket in production, like images.
  */
 export const Documents: CollectionConfig = {
   slug: 'documents',

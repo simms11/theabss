@@ -17,7 +17,7 @@ import { Users } from './collections/Users'
 import { PageContent } from './globals/PageContent'
 import { SiteSettings } from './globals/SiteSettings'
 import { shouldPushSchema } from './lib/localDatabase'
-import { MEDIA_PREFIX, mediaFileUrl, s3Enabled } from './lib/mediaStorage'
+import { MEDIA_PREFIX, mediaFileUrl, s3Enabled, s3Endpoint, s3Region } from './lib/mediaStorage'
 import { assertProductionEnv } from './lib/productionEnv'
 
 const filename = fileURLToPath(import.meta.url)
@@ -83,7 +83,10 @@ export default buildConfig({
       alwaysInsertFields: true,
       bucket: process.env.S3_BUCKET || '',
       config: {
-        region: process.env.S3_REGION,
+        region: s3Region(),
+        // Cloudflare R2 and other S3-compatible services have their own address and put the
+        // bucket in the path. Unset, the adapter talks to Amazon S3.
+        ...(s3Endpoint() ? { endpoint: s3Endpoint() as string, forcePathStyle: true } : {}),
         credentials: {
           accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
           secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
@@ -92,7 +95,7 @@ export default buildConfig({
       collections: {
         media: {
           prefix: MEDIA_PREFIX,
-          // Media is public, and the bucket is private: serve files from CloudFront rather
+          // Media is public: serve files from the bucket's CDN address rather
           // than through a server function on every request.
           disablePayloadAccessControl: true,
           generateFileURL: ({ filename: file, prefix }) => mediaFileUrl(file, prefix),

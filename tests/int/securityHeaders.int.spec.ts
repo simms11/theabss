@@ -11,8 +11,8 @@ const PROD = { NODE_ENV: 'production' }
 const PROD_WITH_MEDIA = {
   ...PROD,
   S3_BUCKET: 'abss-media',
-  S3_REGION: 'eu-west-2',
-  MEDIA_CDN_URL: 'https://d111111abcdef8.cloudfront.net',
+  S3_ENDPOINT: 'https://0123456789abcdef.r2.cloudflarestorage.com',
+  MEDIA_CDN_URL: 'https://media.example.org',
 }
 
 const toMap = (list: { key: string; value: string }[]) =>
@@ -104,19 +104,19 @@ describe('security headers', () => {
     it('names no storage host until one is configured', () => {
       expect(csp['connect-src']).toEqual(["'self'"])
       expect(
-        csp['img-src'].filter((s) => s.includes('cloudfront') || s.includes('amazonaws')),
+        csp['img-src'].filter((s) => s.includes('example.org') || s.includes('cloudflarestorage')),
       ).toEqual([])
     })
 
     it('loads images from the CDN, never straight from the bucket', () => {
-      expect(cspWithMedia['img-src']).toContain('https://d111111abcdef8.cloudfront.net')
-      expect(cspWithMedia['img-src'].some((s) => s.includes('amazonaws.com'))).toBe(false)
+      expect(cspWithMedia['img-src']).toContain('https://media.example.org')
+      expect(cspWithMedia['img-src'].some((s) => s.includes('cloudflarestorage'))).toBe(false)
     })
 
-    it('lets the admin upload to this bucket only, not all of S3', () => {
+    it('lets the admin upload to this storage account only', () => {
       expect(cspWithMedia['connect-src']).toEqual([
         "'self'",
-        'https://abss-media.s3.eu-west-2.amazonaws.com',
+        'https://0123456789abcdef.r2.cloudflarestorage.com',
       ])
     })
 

@@ -2,7 +2,7 @@
 
 The website for the **Afruika Bantu Saturday School**, a supplementary school teaching English, Maths, Science and African History to children aged 5 to 16 since 1997.
 
-Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS 3** on **Postgres**, with media in **S3 behind CloudFront**.
+Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS 3** on **Postgres**, with media in **S3-compatible object storage** (Cloudflare R2).
 
 ## Features
 
@@ -16,16 +16,17 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 - **Photo gallery:** an event's photos and flyer open in a lightbox that works from the keyboard: arrow keys move between photos, Escape closes it and focus returns to where it was.
 - **Video:** the school's YouTube videos, shown as still images; the player loads only when a visitor presses play, from YouTube's no-cookie domain.
 - **Forms and documents:** PDF and Word files for parents, uploaded in the admin and listed by category with their type and size.
-- **Privacy:** the site sets no cookies of its own and uses no trackers. A privacy notice says what the contact form keeps and for how long, and which features come from other providers.
+- **Privacy:** the site sets no cookies of its own and uses no advertising trackers; visits to the live site are counted with a cookie-free tool. A privacy notice says what the contact form keeps and for how long, and which features come from other providers.
 - **Editable wording:** page introductions and the closing invitation are edited in the admin under Page wording.
 - **Questions and answers:** an accordion of what parents ask, above the contact form and edited in the admin, that works from the keyboard and without JavaScript, with FAQ data for search.
 - **Safeguarding:** every photo upload must state whether it shows children; if it does, parental consent must be confirmed before it can be saved.
 - **Location:** one address in Site Settings drives the key facts, the directions link and the map.
-- **Media:** images in a private S3 bucket served through CloudFront.
+- **Media:** images and documents in an S3-compatible bucket (Cloudflare R2), served from its CDN address; admin uploads go straight from the browser with a signed URL.
 - **Wayfinding:** a one-button menu on phones, the key facts beside every text page, and a closing "ask about a place" band so no page is a dead end.
 - **Motion:** a gentle hero entrance, items that slide into place as they scroll into view (in CSS, no script, and never faded, so text keeps its contrast) and hover states on cards, all switched off for visitors who ask for reduced motion.
 - **Legacy addresses:** older `.html` addresses redirect permanently to the current pages.
 - **Security:** a Content Security Policy and security headers, role-based access, and login lockout after five failed attempts.
+- **Performance:** Lighthouse runs in CI against a production build and fails the build if a page falls below its budget for speed, accessibility or SEO.
 - **Accessibility:** WCAG 2.2 AA, checked by axe in the browser tests on every page. `/styleguide` documents the design tokens and colour contrast.
 
 ## Architecture
@@ -42,9 +43,9 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 │        │                                                                          │
 │  src/lib/queries.ts ──► Payload Local API ──► Postgres                            │
 │                                       └──► Media: local disk (dev)                │
-│                                                   private S3 bucket (production)  │
+│                                                   S3-compatible bucket (production)  │
 └───────────────────────────────────────────────────────────────────────────────────┘
-        Visitor's browser ──► CloudFront ──► S3      (images)
+        Visitor's browser ──► CDN address ──► bucket (images, documents)
                           └─► youtube-nocookie.com   (video)
 ```
 
@@ -91,10 +92,10 @@ In development the database schema is created automatically and uploads are save
 | `pnpm check`          | Lint, typecheck and Prettier; run before every commit              |
 | `pnpm test:int`       | Vitest unit and database tests, in a separate `<db>_test` database |
 | `pnpm test:e2e`       | Playwright browser tests against a running dev server              |
+| `pnpm test:perf`      | Lighthouse budgets against a production build                      |
 | `pnpm seed`           | First admin user and the school's core pages; never overwrites     |
 | `pnpm generate:types` | Regenerate `src/payload-types.ts` after changing a collection      |
 
 ## Roadmap
 
-- S3 bucket and CloudFront distribution defined in Terraform
 - Deployment
