@@ -22,7 +22,11 @@ const nextConfig: NextConfig = {
   },
   images: {
     localPatterns: [{ pathname: '/api/media/file/**' }],
-    remotePatterns: cdn ? [{ protocol: 'https', hostname: new URL(cdn).hostname }] : [],
+    remotePatterns: [
+      // Video still images, shown before a visitor presses play.
+      { protocol: 'https', hostname: 'i.ytimg.com', pathname: '/vi/**' },
+      ...(cdn ? [{ protocol: 'https' as const, hostname: new URL(cdn).hostname }] : []),
+    ],
     formats: ['image/avif', 'image/webp'],
   },
   webpack: (webpackConfig) => {

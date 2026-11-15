@@ -3,6 +3,7 @@ import type { Field, GlobalConfig, TextFieldSingleValidation } from 'payload'
 import { admins, anyone } from '@/access'
 import { revalidateSettings } from '@/hooks/revalidate'
 import { isStripePaymentLink } from '@/lib/payments'
+import { youtubeId } from '@/lib/youtube'
 
 /** Social links must be full addresses: "@handle" would become a broken link in the footer. */
 const httpsUrl: TextFieldSingleValidation = (value) =>
@@ -42,6 +43,22 @@ export const DEFAULT_SUBJECTS = [
     name: 'Science',
     description:
       'Lessons that make learning fun and encourage pupils to explore, ask questions and share what they find.',
+  },
+]
+
+/** Videos from the school's YouTube channel. Editors can retitle, reorder, add or remove. */
+export const DEFAULT_VIDEOS = [
+  {
+    title: 'Afruika Bantu Saturday School on NABSS TV',
+    url: 'https://www.youtube.com/watch?v=oz1rbWQd9_k',
+  },
+  {
+    title: 'Pan-Afrikan Sports and Cultural Day 2024',
+    url: 'https://www.youtube.com/watch?v=IrTO8qOFu_4',
+  },
+  {
+    title: 'Malcolm X: Afruika Bantu Saturday School',
+    url: 'https://www.youtube.com/watch?v=o-hclskV4Is',
   },
 ]
 
@@ -220,6 +237,39 @@ export const SiteSettings: GlobalConfig = {
                   text: 'Up, you mighty race, for you can accomplish what you will.',
                   attribution: 'The Honourable Marcus Mosiah Garvey',
                 }),
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Videos',
+          description:
+            'Videos from the school’s YouTube channel, shown on the home page. Each loads only when a visitor presses play.',
+          fields: [
+            {
+              name: 'videos',
+              type: 'array',
+              maxRows: 6,
+              labels: { singular: 'Video', plural: 'Videos' },
+              defaultValue: DEFAULT_VIDEOS,
+              fields: [
+                {
+                  name: 'title',
+                  type: 'text',
+                  required: true,
+                  admin: { description: 'Shown under the video and read out by screen readers.' },
+                },
+                {
+                  name: 'url',
+                  type: 'text',
+                  required: true,
+                  label: 'YouTube address',
+                  validate: (value: string | null | undefined) =>
+                    youtubeId(value)
+                      ? true
+                      : 'Paste the video’s address from YouTube, e.g. https://www.youtube.com/watch?v=…',
+                  admin: { placeholder: 'https://www.youtube.com/watch?v=...' },
+                },
               ],
             },
           ],

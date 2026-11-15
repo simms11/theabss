@@ -42,6 +42,24 @@ test.describe('Frontend', () => {
     await expect(quotes.first().locator('figcaption')).toContainText('Marcus Mosiah Garvey')
   })
 
+  // Privacy and speed: nothing from YouTube's player loads unless someone presses play.
+  test('videos load only when played', async ({ page }) => {
+    await page.goto('/')
+    const section = page.locator('section', {
+      has: page.getByRole('heading', { name: 'See the school in action', level: 2 }),
+    })
+    const play = section.getByRole('button', { name: /^Play video: / })
+    await expect(play).toHaveCount(3)
+    await expect(page.locator('iframe[src*="youtube"]')).toHaveCount(0)
+
+    await play.first().click()
+    const player = section.locator('iframe')
+    await expect(player).toHaveCount(1)
+    await expect(player).toHaveAttribute('src', /^https:\/\/www\.youtube-nocookie\.com\/embed\//)
+    await expect(player).toHaveAttribute('title', /.+/)
+    await expect(play).toHaveCount(2)
+  })
+
   // The address is text first (copyable, searchable, read aloud); the map is an extra.
   test('home page shows where the school is, as text and on a map', async ({ page }) => {
     await page.goto('/')

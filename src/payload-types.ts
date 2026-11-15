@@ -703,6 +703,16 @@ export interface SiteSetting {
       attribution?: string | null;
     };
   };
+  videos?:
+    | {
+        /**
+         * Shown under the video and read out by screen readers.
+         */
+        title: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
   payments?: {
     intro?: string | null;
     /**
@@ -799,6 +809,13 @@ export interface SiteSettingsSelect<T extends boolean = true> {
               text?: T;
               attribution?: T;
             };
+      };
+  videos?:
+    | T
+    | {
+        title?: T;
+        url?: T;
+        id?: T;
       };
   payments?:
     | T

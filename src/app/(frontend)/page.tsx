@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { EventCard } from '@/components/EventCard'
 import { LocationMap } from '@/components/LocationMap'
 import { Quote } from '@/components/Quote'
+import { VideoEmbed } from '@/components/VideoEmbed'
 import { placeQuery } from '@/lib/maps'
 import { getSiteSettings, getUpcomingEvents } from '@/lib/queries'
+import { youtubeId } from '@/lib/youtube'
 import { absoluteUrl, asMedia, cn, mediaSrc, serializeJsonLd } from '@/lib/utils'
 
 /** The school's colours as a stripe on each subject card: a shape, never text. */
@@ -20,6 +22,10 @@ export default async function HomePage() {
   const [settings, events] = await Promise.all([getSiteSettings(), getUpcomingEvents(3)])
   const { school, teaching, quotes } = settings
   const subjects = teaching?.subjects ?? []
+  const videos = (settings.videos ?? []).flatMap((video) => {
+    const id = youtubeId(video.url)
+    return id ? [{ id, title: video.title }] : []
+  })
   const hero = asMedia(settings.heroImage)
 
   const facts = [
@@ -164,6 +170,23 @@ export default async function HomePage() {
           )}
         </div>
       </section>
+
+      {videos.length > 0 && (
+        <section aria-labelledby="videos-heading" className="section border-line border-t">
+          <div className="container-site">
+            <h2 id="videos-heading" className="text-display-lg">
+              See the school in action
+            </h2>
+            <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {videos.map((video) => (
+                <li key={video.id}>
+                  <VideoEmbed id={video.id} title={video.title} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {school?.address && (
         <section aria-labelledby="find-us-heading" className="section border-line border-t">
