@@ -8,7 +8,7 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 
 - **Content management:** editors manage events, pages, photos and the school's key facts in the admin. The layout stays in code, so the design can't be broken.
 - **Publishing:** pages are prerendered and refresh within seconds of a change in the admin, with no redeploy.
-- **Events:** date, venue and summary are required text, with an optional flyer. Finished events move to "past" automatically.
+- **Events:** date, venue and summary are required text, with an optional flyer. Finished events move to "past" automatically. Visitors can filter by type (trips, sports, performances), add an event to their calendar or subscribe to the calendar feed; upcoming events carry structured data for search.
 - **Teaching and quotes:** the home page lists each subject taught and carries the quotations the school teaches by, marked up as quotations with their source.
 - **Core pages:** About, Educational Services and School Life, created by the seed and editable in the admin.
 - **Contact form:** follows the GOV.UK form patterns, works without JavaScript, and emails the school. It collects the minimum needed to reply; messages are readable by admins only and deleted after 12 months.
@@ -88,8 +88,7 @@ In development the database schema is created automatically and uploads are save
 
 ## Roadmap
 
-- Remaining pages: Trips, Sports, Finances and Forms
+- Fees on the payment page, and a Forms page for downloads
 - Photo gallery with a lightbox; click-to-load YouTube embeds
-- Event filters, "add to calendar" and event structured data
 - S3 bucket and CloudFront distribution defined in Terraform
 - Deployment

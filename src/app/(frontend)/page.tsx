@@ -153,7 +153,7 @@ export default async function HomePage() {
             <ul className="mt-8 grid gap-5">
               {events.map((event) => (
                 <li key={event.id}>
-                  <EventCard event={event} />
+                  <EventCard event={event} calendarLink />
                 </li>
               ))}
             </ul>

@@ -1,7 +1,11 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 
-import { EventCard } from '@/components/EventCard'
-import { getPastEvents, getUpcomingEvents } from '@/lib/queries'
+import { EventLists } from '@/components/EventLists'
+import { EventsBrowser } from '@/components/EventsBrowser'
+import { eventFinishesAt } from '@/lib/dates'
+import { getPastEvents, getSiteSettings, getUpcomingEvents } from '@/lib/queries'
+import { absoluteUrl, asMedia, mediaSrc, serializeJsonLd } from '@/lib/utils'
 
 export const metadata: Metadata = {
   title: 'Events',
@@ -10,10 +14,44 @@ export const metadata: Metadata = {
 }
 
 export default async function EventsPage() {
-  const [upcoming, past] = await Promise.all([getUpcomingEvents(), getPastEvents()])
+  const [upcoming, past, settings] = await Promise.all([
+    getUpcomingEvents(),
+    getPastEvents(),
+    getSiteSettings(),
+  ])
+
+  // Event structured data, so search engines can show dates and venues in their results.
+  const jsonLd = upcoming.map((event) => {
+    const flyer = asMedia(event.flyer)
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Event',
+      name: event.title,
+      description: event.summary,
+      startDate: event.start,
+      endDate: eventFinishesAt(event.start, event.end).toISOString(),
+      eventStatus: 'https://schema.org/EventScheduled',
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      location: {
+        '@type': 'Place',
+        name: event.venue,
+        address: event.address ?? undefined,
+      },
+      image: flyer ? absoluteUrl(mediaSrc(flyer, 'feature')) : undefined,
+      organizer: { '@type': 'Organization', name: settings.siteName, url: absoluteUrl('/') },
+      url: absoluteUrl('/events'),
+    }
+  })
 
   return (
     <>
+      {jsonLd.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
+        />
+      )}
+
       <section className="dark-section">
         <div className="container-site py-14">
           <h1 className="text-display-lg">Events</h1>
@@ -21,46 +59,24 @@ export default async function EventsPage() {
             Open days, performances, sports days and trips. Families and the wider community are
             welcome.
           </p>
-        </div>
-      </section>
-
-      <section aria-labelledby="upcoming-heading" className="section">
-        <div className="container-site">
-          <h2 id="upcoming-heading" className="text-display-md">
-            Coming up
-          </h2>
-          {upcoming.length > 0 ? (
-            <ul className="mt-6 grid gap-5">
-              {upcoming.map((event) => (
-                <li key={event.id}>
-                  <EventCard event={event} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-fg-muted mt-4">
-              No events are booked in just now. New dates are added here as soon as they are set.
+          {upcoming.length > 0 && (
+            <p className="mt-5">
+              <a
+                href="/events/calendar.ics"
+                className="text-accent inline-flex min-h-11 items-center font-bold"
+              >
+                Add all upcoming events to your calendar
+              </a>
             </p>
           )}
         </div>
       </section>
 
-      {past.length > 0 && (
-        <section aria-labelledby="past-heading" className="section border-line border-t">
-          <div className="container-site">
-            <h2 id="past-heading" className="text-display-md">
-              Past events
-            </h2>
-            <ul className="mt-6 grid gap-5">
-              {past.map((event) => (
-                <li key={event.id}>
-                  <EventCard event={event} />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
+      {/* The filter reads the address, which only the browser knows. Until it has loaded,
+          and for visitors without JavaScript, every event is listed. */}
+      <Suspense fallback={<EventLists upcoming={upcoming} past={past} />}>
+        <EventsBrowser upcoming={upcoming} past={past} />
+      </Suspense>
     </>
   )
 }

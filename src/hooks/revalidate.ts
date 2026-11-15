@@ -41,8 +41,13 @@ const safely = (payload: Payload, what: string, fn: () => void) => {
 export const revalidatePath = (payload: Payload, path: string, type?: 'layout' | 'page') =>
   safely(payload, path, () => nextRevalidatePath(path, type))
 
+/**
+ * `expire: 0` means the next request waits for fresh data and never gets the previous
+ * version. An editor who publishes and then reloads the page must see their change; with
+ * the default profile the first reload would still show the old content.
+ */
 export const revalidateTag = (payload: Payload, tag: string) =>
-  safely(payload, `tag ${tag}`, () => nextRevalidateTag(tag, 'max'))
+  safely(payload, `tag ${tag}`, () => nextRevalidateTag(tag, { expire: 0 }))
 
 /**
  * Nothing public changed when a document wasn't live before and still isn't (a draft save).

@@ -49,7 +49,7 @@ export default async function PaymentPage() {
                     <h3 className="text-display-sm">{link.label}</h3>
                     {link.description && <p className="text-fg-muted mt-1">{link.description}</p>}
                     <a href={link.url} rel="noopener noreferrer" className="btn-solid mt-4">
-                      Pay by card<span className="sr-only">: {link.label} (opens Stripe)</span>
+                      Pay by card<span className="sr-only"> for {link.label} (opens Stripe)</span>
                     </a>
                   </li>
                 ))}

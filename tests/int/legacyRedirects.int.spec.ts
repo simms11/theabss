@@ -32,7 +32,7 @@ describe('legacy address redirects', () => {
 
   it('sends each one to a clean address on this site', () => {
     for (const destination of Object.values(LEGACY_PAGES)) {
-      expect(destination).toMatch(/^\/[a-z-]*$/)
+      expect(destination).toMatch(/^\/[a-z-]*(\?type=[a-z-]+)?$/)
     }
   })
 

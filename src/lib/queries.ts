@@ -49,6 +49,10 @@ export const getUpcomingEvents = async (limit?: number, now: Date = new Date()) 
   return limit ? upcoming.slice(0, limit) : upcoming
 }
 
+/** One published event, for its calendar file. */
+export const getEventBySlug = async (slug: string): Promise<Event | null> =>
+  (await getPublishedEvents()).find((event) => event.slug === slug) ?? null
+
 /** Events that have finished, most recent first. */
 export const getPastEvents = async (limit = 24, now: Date = new Date()) =>
   (await getPublishedEvents())

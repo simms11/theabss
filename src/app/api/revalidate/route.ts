@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   if (!secret || req.headers.get('x-revalidation-secret') !== secret) {
     return Response.json({ ok: false }, { status: 401 })
   }
-  for (const tag of Object.values(CACHE_TAGS)) revalidateTag(tag, 'max')
+  for (const tag of Object.values(CACHE_TAGS)) revalidateTag(tag, { expire: 0 })
   revalidatePath('/', 'layout')
   return Response.json({ ok: true, revalidated: Object.values(CACHE_TAGS) })
 }

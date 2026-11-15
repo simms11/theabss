@@ -1,17 +1,9 @@
 import Image from 'next/image'
 
 import { formatEventWhen } from '@/lib/dates'
+import { EVENT_TYPE_LABELS } from '@/lib/eventTypes'
 import { asMedia, mediaSrc } from '@/lib/utils'
 import type { Event } from '@/payload-types'
-
-const TYPE_LABELS: Record<Event['type'], string> = {
-  community: 'Community',
-  performance: 'Performance',
-  sports: 'Sports',
-  trip: 'Trip',
-  'open-day': 'Open day',
-  'term-date': 'Term date',
-}
 
 /**
  * One event, with everything a parent needs as real text: what, when, where, cost. The
@@ -20,9 +12,12 @@ const TYPE_LABELS: Record<Event['type'], string> = {
 export function EventCard({
   event,
   headingLevel: Heading = 'h3',
+  calendarLink = false,
 }: {
   event: Event
   headingLevel?: 'h2' | 'h3'
+  /** Offer "Add to calendar". For events that haven't happened yet. */
+  calendarLink?: boolean
 }) {
   const flyer = asMedia(event.flyer)
   const thumb = flyer?.sizes?.card
@@ -39,7 +34,7 @@ export function EventCard({
         />
       )}
       <div className="min-w-0 flex-1">
-        <p className="eyebrow text-accent">{TYPE_LABELS[event.type]}</p>
+        <p className="eyebrow text-accent">{EVENT_TYPE_LABELS[event.type]}</p>
         <Heading className="text-display-sm mt-1">{event.title}</Heading>
         <dl className="mt-3 space-y-1">
           <div>
@@ -63,10 +58,19 @@ export function EventCard({
           )}
         </dl>
         <p className="mt-3">{event.summary}</p>
-        {event.bookingUrl && (
-          <a href={event.bookingUrl} rel="noopener noreferrer" className="btn-outline mt-4">
-            Book a place<span className="sr-only">: {event.title}</span>
-          </a>
+        {(event.bookingUrl || calendarLink) && (
+          <div className="mt-4 flex flex-wrap gap-3">
+            {event.bookingUrl && (
+              <a href={event.bookingUrl} rel="noopener noreferrer" className="btn-outline">
+                Book a place<span className="sr-only"> for {event.title}</span>
+              </a>
+            )}
+            {calendarLink && (
+              <a href={`/events/${event.slug}/calendar.ics`} className="btn-outline">
+                Add to calendar<span className="sr-only"> for {event.title}</span>
+              </a>
+            )}
+          </div>
         )}
       </div>
     </article>
