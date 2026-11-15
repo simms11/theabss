@@ -77,7 +77,7 @@ We believe all our young people should treat others with courtesy and considerat
 
 ## Trips and cultural events
 
-We take our young people to educational activities in the community as whole-school trips. There are also cultural imperatives that we prepare our children to take part in, including our annual memorial lecture, Black Month and Kwanzaa celebrations. We prepare meticulously for these with the support of our parents and carers.
+We take our young people to educational activities in the community as whole-school trips. There are also cultural imperatives that we prepare our children to take part in, including our annual memorial lecture, Black History Month and Kwanzaa celebrations. We prepare meticulously for these with the support of our parents and carers.
 
 ## A holistic approach
 
