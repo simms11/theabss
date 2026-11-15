@@ -1,0 +1,185 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* ------------------------------------------------------------------
+   Design tokens, Afruika Bantu Saturday School
+   The school's Pan-African palette: red, gold, green and black, on a warm
+   paper background for reading. Every pairing below is measured; the rule
+   of thumb is in /styleguide. Never hard-code a hex colour in a component.
+   ------------------------------------------------------------------ */
+@theme {
+  /* Palette */
+  --color-ink: #14110f;
+  --color-ink-800: #221d1a;
+  --color-paper: #faf6ee;
+  --color-sand: #efe7d8;
+  --color-stone: #5b5249;
+  --color-mist: #cfc6b8;
+  --color-red: #a32a2a;
+  --color-red-700: #8a2222;
+  --color-red-300: #f08a80;
+  --color-gold: #e0b43a;
+  --color-gold-700: #8a6508;
+  --color-green: #2f7d32;
+  --color-green-300: #7cc35a;
+
+  /* Semantic: the paper surface (default). Contrast on paper: ink 17.4:1, stone 7.1:1,
+     red 6.7:1, green 4.75:1, gold-700 4.9:1. Plain gold fails on paper: never text here.
+     dark-section and red-section override these for their surfaces. */
+  --color-bg: var(--color-paper);
+  --color-fg: var(--color-ink);
+  --color-fg-muted: var(--color-stone);
+  --color-line: var(--color-sand);
+  --color-accent: var(--color-red);
+  --color-focus: var(--color-red);
+
+  /* Type: two families */
+  --font-display: var(--font-abril), Georgia, 'Times New Roman', serif;
+  --font-sans: var(--font-lato), system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Fluid type scale. Line heights stay above 1.1 so wrapped headings never overlap. */
+  --text-display-xl: clamp(2.5rem, 1.8rem + 3.4vw, 5rem);
+  --text-display-xl--line-height: 1.1;
+  --text-display-lg: clamp(2rem, 1.5rem + 2.2vw, 3.25rem);
+  --text-display-lg--line-height: 1.15;
+  --text-display-md: clamp(1.5rem, 1.3rem + 1vw, 2.125rem);
+  --text-display-md--line-height: 1.2;
+  --text-display-sm: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+  --text-display-sm--line-height: 1.3;
+  --text-eyebrow: 0.8125rem;
+  --text-eyebrow--line-height: 1.2;
+  --tracking-eyebrow: 0.12em;
+
+  /* Layout */
+  --container-prose: 42rem;
+  --container-site: 72rem;
+  --spacing-gutter: 1rem;
+  --radius-card: 0.5rem;
+
+  /* Motion */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: only light;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bg text-fg font-sans text-[1.0625rem] leading-relaxed antialiased;
+  }
+
+  ::selection {
+    @apply bg-gold text-ink;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-balance;
+  }
+
+  a {
+    @apply underline-offset-4;
+  }
+
+  :focus-visible {
+    @apply rounded-sm outline-3 outline-offset-2;
+    outline-color: var(--color-focus);
+  }
+
+  img {
+    @apply h-auto max-w-full;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ---- Utilities (defined with @utility so they can be @apply'd and take variants) ---- */
+
+@utility container-site {
+  @apply max-w-site px-gutter mx-auto w-full sm:px-6 lg:px-10;
+}
+
+@utility section {
+  @apply py-14 sm:py-20;
+}
+
+@utility eyebrow {
+  @apply text-eyebrow tracking-eyebrow font-sans font-bold uppercase;
+}
+
+@utility btn {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 py-2.5 font-sans text-base font-bold no-underline transition-colors duration-200;
+}
+/* Gold with ink text: 9.6:1. Works on every surface. */
+@utility btn-primary {
+  @apply btn bg-gold text-ink hover:bg-paper;
+}
+@utility btn-outline {
+  @apply btn text-fg hover:bg-fg hover:text-bg border-2 border-current bg-transparent;
+}
+
+/* Black surface (header, hero, footer). Contrast on ink: paper 17.4:1, mist 11.1:1,
+   gold 9.6:1, green-300 8.8:1, red-300 7.8:1. The brand red is 2.3:1 here, so on black
+   red is used only as a shape or border, never as text. */
+@utility dark-section {
+  @apply bg-ink text-paper;
+  --color-bg: var(--color-ink);
+  --color-fg: var(--color-paper);
+  --color-fg-muted: var(--color-mist);
+  --color-line: var(--color-ink-800);
+  --color-accent: var(--color-gold);
+  --color-focus: var(--color-gold);
+}
+
+/* Red surface, for one emphasised band per page. Contrast on red-700: paper 8.4:1,
+   gold 4.6:1 (headings and large text only). */
+@utility red-section {
+  @apply text-paper bg-red-700;
+  --color-bg: var(--color-red-700);
+  --color-fg: var(--color-paper);
+  --color-fg-muted: var(--color-paper);
+  --color-line: var(--color-red);
+  --color-accent: var(--color-gold);
+  --color-focus: var(--color-gold);
+}
+
+/* The red, gold and green stripe: the school's colours as a shape, not as text. */
+@utility pan-stripe {
+  @apply h-1.5 w-full;
+  background: linear-gradient(
+    to right,
+    var(--color-red) 0 33.33%,
+    var(--color-gold) 33.33% 66.66%,
+    var(--color-green) 66.66% 100%
+  );
+}
+
+@utility skip-link {
+  @apply focus:bg-gold focus:text-ink sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-sm focus:px-4 focus:py-2 focus:font-bold;
+}
+
+@utility card {
+  @apply rounded-card border-line bg-bg border;
+}
+
+/* Rich text from the CMS (standalone pages) */
+@utility prose-page {
+  @apply prose prose-lg text-fg prose-headings:font-display prose-headings:font-normal prose-headings:text-fg prose-a:text-accent prose-strong:text-fg prose-hr:border-line prose-img:rounded-card max-w-prose font-sans;
+}
