@@ -27,7 +27,7 @@ export function EventCard({
   }))
   const photos = toGalleryPhotos(event.photos)
   return (
-    <article className="card flex flex-col gap-5 p-5 sm:flex-row sm:p-6">
+    <article className="card card-lift flex flex-col gap-5 p-5 sm:flex-row sm:p-6">
       {flyer.length > 0 && (
         <PhotoGallery
           photos={flyer}

@@ -58,7 +58,7 @@ export default async function FormsPage() {
                   const type = fileTypeLabel(document.mimeType, document.filename)
                   const size = formatFileSize(document.filesize)
                   return (
-                    <li key={document.id} className="card flex flex-col p-5">
+                    <li key={document.id} className="card card-lift reveal flex flex-col p-5">
                       <h3 className="text-display-sm">{document.title}</h3>
                       {document.description && (
                         <p className="text-fg-muted mt-1">{document.description}</p>

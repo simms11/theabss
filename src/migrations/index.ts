@@ -9,6 +9,8 @@ import * as migration_20261115_214136_travel_and_social from './20261115_214136_
 import * as migration_20261115_215556_documents from './20261115_215556_documents';
 import * as migration_20261115_221112_page_wording from './20261115_221112_page_wording';
 import * as migration_20261115_221818_event_photos from './20261115_221818_event_photos';
+import * as migration_20261115_222319_faqs from './20261115_222319_faqs';
+import * as migration_20261115_223331_shorter_home from './20261115_223331_shorter_home';
 
 export const migrations = [
   {
@@ -64,6 +66,16 @@ export const migrations = [
   {
     up: migration_20261115_221818_event_photos.up,
     down: migration_20261115_221818_event_photos.down,
-    name: '20261115_221818_event_photos'
+    name: '20261115_221818_event_photos',
+  },
+  {
+    up: migration_20261115_222319_faqs.up,
+    down: migration_20261115_222319_faqs.down,
+    name: '20261115_222319_faqs',
+  },
+  {
+    up: migration_20261115_223331_shorter_home.up,
+    down: migration_20261115_223331_shorter_home.down,
+    name: '20261115_223331_shorter_home'
   },
 ];

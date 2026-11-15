@@ -201,6 +201,67 @@
   @apply border-ink bg-bg text-fg aria-invalid:border-accent mt-2 block min-h-11 w-full rounded-sm border-2 px-3 py-2 text-base aria-invalid:border-4;
 }
 
+/* ---- Motion ----
+   Small and purposeful, and only for people who haven't asked for less: every rule here
+   sits inside prefers-reduced-motion: no-preference, so with "reduce motion" switched on
+   nothing moves and everything is simply there. */
+
+/* Slides an item up into place as it scrolls into view. It moves but never fades: text that
+   is part-transparent on its way in is too faint to read, and fails contrast, for as long
+   as it sits at the edge of the screen. Driven by the scroll position in CSS alone, so there
+   is no script and nothing to wait for. Browsers without scroll-driven animations skip it. */
+@utility reveal {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: slide-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+
+/* The hero's entrance when the page loads: it settles into place, also without fading.
+   Stagger with rise-2 and rise-3. */
+@utility rise {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: rise-in 600ms var(--ease-out-soft) both;
+  }
+}
+@utility rise-2 {
+  @apply rise;
+  animation-delay: 120ms;
+}
+@utility rise-3 {
+  @apply rise;
+  animation-delay: 240ms;
+}
+
+/* A card that holds something to open or follow lifts slightly under the pointer. */
+@utility card-lift {
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      box-shadow 200ms var(--ease-out-soft),
+      translate 200ms var(--ease-out-soft);
+  }
+  &:hover {
+    box-shadow: 0 8px 24px -12px color-mix(in oklab, var(--color-ink) 45%, transparent);
+    @media (prefers-reduced-motion: no-preference) {
+      translate: 0 -2px;
+    }
+  }
+}
+
+@keyframes rise-in {
+  from {
+    translate: 0 1rem;
+  }
+}
+@keyframes slide-in {
+  from {
+    translate: 0 1.5rem;
+  }
+}
+
 /* The photo lightbox: a modal dialog over a dimmed page. */
 @layer components {
   .lightbox::backdrop {

@@ -26,8 +26,9 @@ const socialLink = (
 })
 
 /**
- * The four subjects the school has taught since 1997, worded from its own About and
- * Educational Services pages. Editors can reword, reorder or add to them.
+ * The four subjects the school has taught since 1997. The names are the defaults for the
+ * home page's signposts; the descriptions go into the Educational Services page the seed
+ * creates, where editors can reword them.
  */
 export const DEFAULT_SUBJECTS = [
   {
@@ -189,12 +190,6 @@ export const SiteSettings: GlobalConfig = {
                   admin: { description: 'Buses, trains and parking. Shown on the Contact page.' },
                 },
                 { name: 'founded', type: 'number', defaultValue: 1997 },
-                {
-                  name: 'history',
-                  type: 'textarea',
-                  defaultValue:
-                    'Our school is named in honour of Afruika Bantu (Annette Blair, 1955–1999): a freedom fighter, activist, scholar, African History researcher and teacher.',
-                },
               ],
             },
           ],
@@ -220,26 +215,12 @@ export const SiteSettings: GlobalConfig = {
                   minRows: 1,
                   maxRows: 8,
                   labels: { singular: 'Subject', plural: 'Subjects' },
-                  admin: { description: 'One card per subject, in this order.' },
-                  defaultValue: DEFAULT_SUBJECTS,
-                  fields: [
-                    { name: 'name', type: 'text', required: true },
-                    {
-                      name: 'description',
-                      type: 'textarea',
-                      required: true,
-                      maxLength: 240,
-                      admin: { description: 'What pupils learn. Max 240 characters.' },
-                    },
-                  ],
-                },
-                {
-                  name: 'tutoring',
-                  type: 'textarea',
-                  maxLength: 300,
-                  label: 'Extra support',
-                  defaultValue:
-                    'One-to-one tutoring is available for pupils who need extra support in a subject.',
+                  admin: {
+                    description:
+                      'The subjects shown on the home page, in this order. Their descriptions are on the Educational Services page.',
+                  },
+                  defaultValue: DEFAULT_SUBJECTS.map(({ name }) => ({ name })),
+                  fields: [{ name: 'name', type: 'text', required: true }],
                 },
               ],
             },
@@ -248,7 +229,7 @@ export const SiteSettings: GlobalConfig = {
         {
           label: 'Quotes',
           description:
-            'Words the school teaches by. The featured quote has its own band on the home page; the closing quote ends the history section.',
+            'Words the school teaches by. The featured quote has its own band on the home page.',
           fields: [
             {
               name: 'quotes',
@@ -256,10 +237,6 @@ export const SiteSettings: GlobalConfig = {
               fields: [
                 quoteGroup('feature', 'Featured quote', {
                   text: 'A people without the knowledge of their past history, origin and culture is like a tree without roots.',
-                  attribution: 'The Honourable Marcus Mosiah Garvey',
-                }),
-                quoteGroup('closing', 'Closing quote', {
-                  text: 'Up, you mighty race, for you can accomplish what you will.',
                   attribution: 'The Honourable Marcus Mosiah Garvey',
                 }),
               ],

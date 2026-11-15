@@ -42,10 +42,10 @@ test.describe('Frontend', () => {
   })
 
   // Quotes are marked up as quotations with their source, not as styled headings.
-  test('home page carries the school’s quotes, each with its attribution', async ({ page }) => {
+  test('home page carries the school’s featured quote, with its attribution', async ({ page }) => {
     await page.goto('/')
     const quotes = page.locator('figure:has(blockquote)')
-    await expect(quotes).toHaveCount(2)
+    await expect(quotes).toHaveCount(1)
     await expect(quotes.first().locator('blockquote')).toContainText('like a tree without roots')
     await expect(quotes.first().locator('figcaption')).toContainText('Marcus Mosiah Garvey')
   })
@@ -108,10 +108,6 @@ test.describe('Frontend', () => {
     await expect(page.getByRole('link', { name: 'More about what we teach' })).toHaveAttribute(
       'href',
       '/educational-services',
-    )
-    await expect(page.getByRole('link', { name: 'More about our history' })).toHaveAttribute(
-      'href',
-      '/about',
     )
   })
 
@@ -179,6 +175,97 @@ test.describe('Frontend', () => {
     expect((await request.get(href ?? '')).status()).toBe(200)
   })
 
+  test.describe('motion', () => {
+    const animations = (page: import('@playwright/test').Page) =>
+      page.evaluate(() => ({
+        hero: getComputedStyle(document.querySelector('h1')!).animationName,
+        cards: [...document.querySelectorAll('.reveal')].map(
+          (el) => getComputedStyle(el).animationName,
+        ),
+      }))
+
+    test('the hero and cards ease in for visitors who have not asked for less motion', async ({
+      page,
+    }) => {
+      await page.goto('/')
+      const { hero, cards } = await animations(page)
+      expect(hero).toBe('rise-in')
+      expect(cards.length).toBeGreaterThan(3)
+      expect(cards.every((name) => name === 'slide-in')).toBe(true)
+      // Items slide but never fade, so text is at full contrast wherever it is on screen.
+      const opacities = await page.evaluate(() =>
+        [...document.querySelectorAll('.reveal')].map((el) => getComputedStyle(el).opacity),
+      )
+      expect(opacities.every((opacity) => opacity === '1')).toBe(true)
+    })
+
+    test('nothing animates when the visitor has reduced motion switched on', async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.goto('/')
+      const { hero, cards } = await animations(page)
+      expect(hero).toBe('none')
+      expect(cards.every((name) => name === 'none')).toBe(true)
+      // And everything is fully visible straight away.
+      const opacities = await page.evaluate(() =>
+        [...document.querySelectorAll('.reveal, h1')].map((el) => getComputedStyle(el).opacity),
+      )
+      expect(opacities.every((opacity) => opacity === '1')).toBe(true)
+    })
+  })
+
+  // The home page signposts; the detail lives on the pages it points to.
+  test('home page is short: six sections, each with one job', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByRole('main').getByRole('heading', { level: 2 })).toHaveText([
+      'Key facts',
+      'What we teach',
+      'Coming up',
+      'See the school in action',
+      'Would you like a place for your child?',
+    ])
+    for (const moved of ['Questions parents ask', 'Find us', 'Our history']) {
+      await expect(page.getByRole('main').getByRole('heading', { name: moved })).toHaveCount(0)
+    }
+    await expect(page.getByRole('main').locator('iframe')).toHaveCount(0)
+  })
+
+  test('questions parents ask open and close from the keyboard, one at a time or together', async ({
+    page,
+  }) => {
+    await page.goto('/contact')
+    const section = page.locator('section', {
+      has: page.getByRole('heading', { name: 'Questions parents ask', level: 2 }),
+    })
+    const cost = section.locator('details', { hasText: 'How much does it cost?' })
+    const answer = cost.getByText(/The Fees and payment page has the full table/)
+    await expect(answer).toBeHidden()
+
+    await cost.locator('summary').focus()
+    await page.keyboard.press('Enter')
+    await expect(answer).toBeVisible()
+
+    // Opening another leaves the first open, so answers can be compared.
+    await section.locator('summary', { hasText: 'What ages do you teach?' }).click()
+    await expect(section.getByText('Children aged 5 to 16.', { exact: true })).toBeVisible()
+    await expect(answer).toBeVisible()
+
+    await page.keyboard.press('Shift+Tab')
+    await cost.locator('summary').focus()
+    await page.keyboard.press('Enter')
+    await expect(answer).toBeHidden()
+  })
+
+  test('questions and answers are described to search engines', async ({ page }) => {
+    await page.goto('/contact')
+    const blocks = await page.locator('script[type="application/ld+json"]').allTextContents()
+    const faq = blocks.map((block) => JSON.parse(block)).find((data) => data['@type'] === 'FAQPage')
+    expect(faq.mainEntity.length).toBeGreaterThanOrEqual(5)
+    expect(faq.mainEntity[0]).toMatchObject({
+      '@type': 'Question',
+      name: 'What ages do you teach?',
+    })
+  })
+
   // Privacy and speed: nothing from YouTube's player loads unless someone presses play.
   test('videos load only when played', async ({ page }) => {
     await page.goto('/')
@@ -195,23 +282,6 @@ test.describe('Frontend', () => {
     await expect(player).toHaveAttribute('src', /^https:\/\/www\.youtube-nocookie\.com\/embed\//)
     await expect(player).toHaveAttribute('title', /.+/)
     await expect(play).toHaveCount(2)
-  })
-
-  // The address is text first (copyable, searchable, read aloud); the map is an extra.
-  test('home page shows where the school is, as text and on a map', async ({ page }) => {
-    await page.goto('/')
-    const section = page.locator('section', {
-      has: page.getByRole('heading', { name: 'Find us', level: 2 }),
-    })
-    await expect(section.getByText('City Heights E-ACT Academy')).toBeVisible()
-    await expect(section.getByText(/SW2 3PW/)).toBeVisible()
-    await expect(section.getByRole('link', { name: 'Get directions' })).toHaveAttribute(
-      'href',
-      /^https:\/\/www\.google\.com\/maps\/dir\//,
-    )
-    const map = section.locator('iframe')
-    await expect(map).toHaveAttribute('title', /Map showing City Heights E-ACT Academy/)
-    await expect(map).toHaveAttribute('src', /^https:\/\/www\.google\.com\/maps\?q=/)
   })
 
   test('the menu marks the current page', async ({ page }) => {

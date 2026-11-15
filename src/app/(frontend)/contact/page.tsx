@@ -1,12 +1,14 @@
 import type { Metadata } from 'next'
 
 import { ContactForm } from '@/components/ContactForm'
+import { Faq } from '@/components/Faq'
 import { LocationMap } from '@/components/LocationMap'
 import { SocialLinks } from '@/components/SocialLinks'
 import { ENQUIRY_RETENTION_MONTHS } from '@/lib/enquiry'
 import { getPageContent, getSiteSettings } from '@/lib/queries'
 import { socialLinksFrom } from '@/lib/social'
 import { turnstileSiteKey } from '@/lib/turnstile'
+import { serializeJsonLd } from '@/lib/utils'
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -18,9 +20,27 @@ export default async function ContactPage() {
   const [settings, content] = await Promise.all([getSiteSettings(), getPageContent()])
   const { school, contactEmail, phone } = settings
   const socialLinks = socialLinksFrom(settings.social)
+  const faqs = content.faqs ?? []
 
   return (
     <>
+      {faqs.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: serializeJsonLd({
+              '@context': 'https://schema.org',
+              '@type': 'FAQPage',
+              mainEntity: faqs.map((faq) => ({
+                '@type': 'Question',
+                name: faq.question,
+                acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+              })),
+            }),
+          }}
+        />
+      )}
+
       <section className="dark-section">
         <div className="container-site py-14">
           <h1 className="text-display-lg">Contact</h1>
@@ -29,6 +49,22 @@ export default async function ContactPage() {
           )}
         </div>
       </section>
+
+      {faqs.length > 0 && (
+        <section aria-labelledby="faq-heading" className="tint-section section">
+          <div className="container-site">
+            <h2 id="faq-heading" className="text-display-md">
+              Questions parents ask
+            </h2>
+            <p className="text-fg-muted mt-2">
+              The answer may already be here. If not, send us a message below.
+            </p>
+            <div className="mt-6">
+              <Faq items={faqs} />
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="section">
         <div className="container-site grid gap-x-16 gap-y-12 lg:grid-cols-2">

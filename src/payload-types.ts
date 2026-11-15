@@ -763,31 +763,21 @@ export interface SiteSetting {
      */
     travel?: string | null;
     founded?: number | null;
-    history?: string | null;
   };
   teaching?: {
     intro?: string | null;
     /**
-     * One card per subject, in this order.
+     * The subjects shown on the home page, in this order. Their descriptions are on the Educational Services page.
      */
     subjects?:
       | {
           name: string;
-          /**
-           * What pupils learn. Max 240 characters.
-           */
-          description: string;
           id?: string | null;
         }[]
       | null;
-    tutoring?: string | null;
   };
   quotes?: {
     feature?: {
-      text?: string | null;
-      attribution?: string | null;
-    };
-    closing?: {
       text?: string | null;
       attribution?: string | null;
     };
@@ -884,6 +874,13 @@ export interface PageContent {
     heading: string;
     text?: string | null;
   };
+  faqs?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
   intros?: {
     events?: string | null;
     contact?: string | null;
@@ -914,7 +911,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         address?: T;
         travel?: T;
         founded?: T;
-        history?: T;
       };
   teaching?:
     | T
@@ -924,21 +920,13 @@ export interface SiteSettingsSelect<T extends boolean = true> {
           | T
           | {
               name?: T;
-              description?: T;
               id?: T;
             };
-        tutoring?: T;
       };
   quotes?:
     | T
     | {
         feature?:
-          | T
-          | {
-              text?: T;
-              attribution?: T;
-            };
-        closing?:
           | T
           | {
               text?: T;
@@ -1019,6 +1007,13 @@ export interface PageContentSelect<T extends boolean = true> {
     | {
         heading?: T;
         text?: T;
+      };
+  faqs?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
       };
   intros?:
     | T

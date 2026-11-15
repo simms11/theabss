@@ -3,7 +3,6 @@ import Link from 'next/link'
 
 import { CallToAction } from '@/components/CallToAction'
 import { EventCard } from '@/components/EventCard'
-import { LocationMap } from '@/components/LocationMap'
 import { Quote } from '@/components/Quote'
 import { VideoEmbed } from '@/components/VideoEmbed'
 import {
@@ -21,9 +20,11 @@ import { absoluteUrl, asMedia, cn, mediaSrc, serializeJsonLd } from '@/lib/utils
 const SUBJECT_ACCENTS = ['border-t-red', 'border-t-gold', 'border-t-green', 'border-t-ink']
 
 /**
- * Home page, in the order a new parent needs it: who we are, the key facts (when, who,
- * what, where, cost), what we teach, a quote the
- * school teaches by, what's coming up, where to find us, then the school's history.
+ * Home page. Short on purpose: it says what the school is, answers the first practical
+ * questions, and signposts the rest. The detail lives on the pages it points to (what we
+ * teach, about, events, contact), so nothing is said twice.
+ *
+ *   hero · key facts · what we teach (signposts) · coming up · quote and videos · invitation
  */
 export default async function HomePage() {
   const [settings, events, pages, content] = await Promise.all([
@@ -85,15 +86,15 @@ export default async function HomePage() {
           {content.home?.heroLabel && (
             <p className="eyebrow text-accent">{content.home.heroLabel}</p>
           )}
-          <h1 className="text-display-xl mt-3 max-w-3xl">{settings.siteName}</h1>
+          <h1 className="text-display-xl rise mt-3 max-w-3xl">{settings.siteName}</h1>
           {/* What the school is, in a sentence, before its values. */}
           {settings.description && (
-            <p className="mt-5 max-w-2xl text-xl sm:text-2xl">{settings.description}</p>
+            <p className="rise-2 mt-5 max-w-2xl text-xl sm:text-2xl">{settings.description}</p>
           )}
           {settings.tagline && (
             <p className="text-accent mt-4 max-w-2xl font-bold">{settings.tagline}</p>
           )}
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="rise-3 mt-8 flex flex-wrap gap-3">
             <Link href="/contact" className="btn-primary">
               Get in touch
             </Link>
@@ -135,38 +136,33 @@ export default async function HomePage() {
       {subjects.length > 0 && (
         <section aria-labelledby="teaching-heading" className="section">
           <div className="container-site">
-            <h2 id="teaching-heading" className="text-display-lg">
-              What we teach
-            </h2>
-            {teaching?.intro && <p className="mt-4 max-w-2xl text-lg">{teaching.intro}</p>}
-            <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+              <div>
+                <h2 id="teaching-heading" className="text-display-lg">
+                  What we teach
+                </h2>
+                {teaching?.intro && <p className="mt-3 max-w-2xl text-lg">{teaching.intro}</p>}
+              </div>
+              {has('educational-services') && (
+                <Link href="/educational-services" className="btn-outline">
+                  More about what we teach
+                </Link>
+              )}
+            </div>
+            {/* Signposts, not descriptions: the detail is on the Educational Services page. */}
+            <ul className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
               {subjects.map((subject, index) => (
                 <li
                   key={subject.id ?? subject.name}
                   className={cn(
-                    'card border-t-4 p-5',
+                    'card reveal border-t-4 p-5',
                     SUBJECT_ACCENTS[index % SUBJECT_ACCENTS.length],
                   )}
                 >
                   <h3 className="text-display-sm">{subject.name}</h3>
-                  <p className="text-fg-muted mt-2">{subject.description}</p>
                 </li>
               ))}
             </ul>
-            {teaching?.tutoring && <p className="mt-6 max-w-2xl font-bold">{teaching.tutoring}</p>}
-            {has('educational-services') && (
-              <Link href="/educational-services" className="btn-outline mt-6">
-                More about what we teach
-              </Link>
-            )}
-          </div>
-        </section>
-      )}
-
-      {quotes?.feature?.text && (
-        <section aria-label="A quote we teach by" className="dark-section section">
-          <div className="container-site">
-            <Quote text={quotes.feature.text} attribution={quotes.feature.attribution} size="lg" />
           </div>
         </section>
       )}
@@ -187,7 +183,7 @@ export default async function HomePage() {
             </div>
             <ul className="mt-8 grid gap-5">
               {events.map((event) => (
-                <li key={event.id}>
+                <li key={event.id} className="reveal">
                   <EventCard event={event} calendarLink />
                 </li>
               ))}
@@ -213,6 +209,14 @@ export default async function HomePage() {
         </section>
       )}
 
+      {quotes?.feature?.text && (
+        <section aria-label="A quote we teach by" className="dark-section section">
+          <div className="container-site">
+            <Quote text={quotes.feature.text} attribution={quotes.feature.attribution} size="lg" />
+          </div>
+        </section>
+      )}
+
       {videos.length > 0 && (
         <section aria-labelledby="videos-heading" className="section">
           <div className="container-site">
@@ -221,53 +225,11 @@ export default async function HomePage() {
             </h2>
             <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {videos.map((video) => (
-                <li key={video.id}>
+                <li key={video.id} className="reveal">
                   <VideoEmbed id={video.id} title={video.title} />
                 </li>
               ))}
             </ul>
-          </div>
-        </section>
-      )}
-
-      {school?.address && (
-        <section aria-labelledby="find-us-heading" className="tint-section section">
-          <div className="container-site">
-            <h2 id="find-us-heading" className="text-display-lg">
-              Find us
-            </h2>
-            <div className="mt-8">
-              <LocationMap venue={school.venue} address={school.address} />
-            </div>
-          </div>
-        </section>
-      )}
-
-      {school?.history && (
-        <section aria-labelledby="history-heading" className="red-section section">
-          <div className="container-site">
-            <h2 id="history-heading" className="text-display-lg text-accent">
-              Our history
-            </h2>
-            <div className="mt-5 max-w-2xl space-y-4 text-lg">
-              {school.founded && (
-                <p>
-                  {settings.shortName} has taught children in South London every term since{' '}
-                  {school.founded}.
-                </p>
-              )}
-              <p>{school.history}</p>
-            </div>
-            {has('about') && (
-              <Link href="/about" className="btn-outline mt-6">
-                More about our history
-              </Link>
-            )}
-            {quotes?.closing?.text && (
-              <div className="mt-10 max-w-2xl">
-                <Quote text={quotes.closing.text} attribution={quotes.closing.attribution} />
-              </div>
-            )}
           </div>
         </section>
       )}

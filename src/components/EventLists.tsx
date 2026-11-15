@@ -21,7 +21,7 @@ export function EventLists({
           {upcoming.length > 0 ? (
             <ul className="mt-6 grid gap-5">
               {upcoming.map((event) => (
-                <li key={event.id}>
+                <li key={event.id} className="reveal">
                   <EventCard event={event} calendarLink />
                 </li>
               ))}
@@ -40,7 +40,7 @@ export function EventLists({
             </h2>
             <ul className="mt-6 grid gap-5">
               {past.map((event) => (
-                <li key={event.id}>
+                <li key={event.id} className="reveal">
                   <EventCard event={event} />
                 </li>
               ))}

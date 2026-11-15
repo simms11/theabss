@@ -9,7 +9,7 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 - **Content management:** editors manage events, pages, photos and the school's key facts in the admin. The layout stays in code, so the design can't be broken.
 - **Publishing:** pages are prerendered and refresh within seconds of a change in the admin, with no redeploy.
 - **Events:** date, venue and summary are required text, with an optional flyer. Finished events move to "past" automatically. Visitors can filter by type (trips, sports, performances), add an event to their calendar or subscribe to the calendar feed; upcoming events carry structured data for search.
-- **Teaching and quotes:** the home page lists each subject taught and carries the quotations the school teaches by, marked up as quotations with their source.
+- **Home page:** short by design: what the school is, the key facts, the subjects as signposts, what's coming up, a quotation and videos, then an invitation. The detail lives on the pages it points to.
 - **Core pages:** About, Educational Services and School Life, created by the seed and editable in the admin.
 - **Contact form:** follows the GOV.UK form patterns, works without JavaScript, and emails the school. It collects the minimum needed to reply; messages are readable by admins only and deleted after 12 months.
 - **Fees and payment:** the headline price, the full fees table and the terms, then how to pay: online from a bank account through GoCardless payment links, so no payment data touches the site, or by bank transfer with copyable details.
@@ -18,10 +18,12 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 - **Forms and documents:** PDF and Word files for parents, uploaded in the admin and listed by category with their type and size.
 - **Privacy:** the site sets no cookies of its own and uses no trackers. A privacy notice says what the contact form keeps and for how long, and which features come from other providers.
 - **Editable wording:** page introductions and the closing invitation are edited in the admin under Page wording.
+- **Questions and answers:** an accordion of what parents ask, above the contact form and edited in the admin, that works from the keyboard and without JavaScript, with FAQ data for search.
 - **Safeguarding:** every photo upload must state whether it shows children; if it does, parental consent must be confirmed before it can be saved.
 - **Location:** one address in Site Settings drives the key facts, the directions link and the map.
 - **Media:** images in a private S3 bucket served through CloudFront.
 - **Wayfinding:** a one-button menu on phones, the key facts beside every text page, and a closing "ask about a place" band so no page is a dead end.
+- **Motion:** a gentle hero entrance, items that slide into place as they scroll into view (in CSS, no script, and never faded, so text keeps its contrast) and hover states on cards, all switched off for visitors who ask for reduced motion.
 - **Legacy addresses:** older `.html` addresses redirect permanently to the current pages.
 - **Security:** a Content Security Policy and security headers, role-based access, and login lockout after five failed attempts.
 - **Accessibility:** WCAG 2.2 AA, checked by axe in the browser tests on every page. `/styleguide` documents the design tokens and colour contrast.
