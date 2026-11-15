@@ -11,8 +11,7 @@ import { admins, nobody } from '@/access'
  *  - Nothing can be created or read through the public API. The form's server action writes
  *    with the Local API; only admins read, so editors never see parents' contact details.
  *  - Not versioned, so deleting an enquiry removes it completely.
- *
- * The public form and the scheduled deletion of old enquiries are not built yet.
+ *  - Deleted automatically after the retention period (src/lib/enquiryStore.ts).
  */
 export const Enquiries: CollectionConfig = {
   slug: 'enquiries',
