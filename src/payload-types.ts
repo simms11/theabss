@@ -669,6 +669,9 @@ export interface SiteSetting {
      */
     fees?: string | null;
     venue?: string | null;
+    /**
+     * Street address and postcode. The map on the home page points here.
+     */
     address?: string | null;
     founded?: number | null;
     history?: string | null;

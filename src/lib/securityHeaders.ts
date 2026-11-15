@@ -10,7 +10,8 @@ import { mediaCdnOrigin, s3UploadOrigin } from './mediaStorage'
  * three named exceptions:
  *  - the media CDN (CloudFront), for images;
  *  - the S3 bucket's own address, only for the admin's direct uploads;
- *  - YouTube's no-cookie player and its thumbnails, for the school's videos.
+ *  - YouTube's no-cookie player and its thumbnails, for the school's videos;
+ *  - Google Maps, framed only, for the map showing where the school is.
  * Dev mode adds what Next's hot reload needs.
  *
  * Framing: only this site may frame its pages, except that FRAME_ANCESTORS can name extra
@@ -21,6 +22,7 @@ type Env = Record<string, string | undefined>
 
 export const YOUTUBE_PLAYER = 'https://www.youtube-nocookie.com'
 export const YOUTUBE_THUMBNAILS = 'https://i.ytimg.com'
+export const GOOGLE_MAPS = 'https://www.google.com'
 
 /** The https origins in FRAME_ANCESTORS (space or comma separated); anything else is ignored. */
 export const parseFrameAncestors = (value = ''): string[] =>
@@ -41,7 +43,7 @@ export const contentSecurityPolicy = (frameAncestors: string[] = [], env: Env = 
     "font-src 'self' data:",
     list("connect-src 'self'", s3UploadOrigin(env), isDev && 'ws: wss:'),
     list("media-src 'self'", cdn),
-    `frame-src ${YOUTUBE_PLAYER}`,
+    `frame-src ${YOUTUBE_PLAYER} ${GOOGLE_MAPS}`,
     ["frame-ancestors 'self'", ...frameAncestors].join(' '),
     "base-uri 'self'",
     "form-action 'self'",

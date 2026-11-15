@@ -17,6 +17,23 @@ test.describe('Frontend', () => {
     await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible()
   })
 
+  // The address is text first (copyable, searchable, read aloud); the map is an extra.
+  test('home page shows where the school is, as text and on a map', async ({ page }) => {
+    await page.goto('/')
+    const section = page.locator('section', {
+      has: page.getByRole('heading', { name: 'Find us', level: 2 }),
+    })
+    await expect(section.getByText('City Heights E-ACT Academy')).toBeVisible()
+    await expect(section.getByText(/SW2 3PW/)).toBeVisible()
+    await expect(section.getByRole('link', { name: 'Get directions' })).toHaveAttribute(
+      'href',
+      /^https:\/\/www\.google\.com\/maps\/dir\//,
+    )
+    const map = section.locator('iframe')
+    await expect(map).toHaveAttribute('title', /Map showing City Heights E-ACT Academy/)
+    await expect(map).toHaveAttribute('src', /^https:\/\/www\.google\.com\/maps\?q=/)
+  })
+
   test('the menu marks the current page', async ({ page }) => {
     await page.goto('/events')
     const nav = page.getByRole('navigation', { name: 'Main' })

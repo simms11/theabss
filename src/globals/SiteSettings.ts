@@ -88,8 +88,21 @@ export const SiteSettings: GlobalConfig = {
                   label: 'Cost',
                   admin: { description: 'Left out of the site until it is filled in.' },
                 },
-                { name: 'venue', type: 'text', label: 'Where' },
-                { name: 'address', type: 'textarea' },
+                {
+                  name: 'venue',
+                  type: 'text',
+                  label: 'Where',
+                  defaultValue: 'City Heights E-ACT Academy',
+                },
+                {
+                  name: 'address',
+                  type: 'textarea',
+                  defaultValue: '33 Abbots Park\nLondon SW2 3PW',
+                  admin: {
+                    description:
+                      'Street address and postcode. The map on the home page points here.',
+                  },
+                },
                 { name: 'founded', type: 'number', defaultValue: 1997 },
                 {
                   name: 'history',

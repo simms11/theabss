@@ -2,12 +2,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { EventCard } from '@/components/EventCard'
+import { LocationMap } from '@/components/LocationMap'
 import { getSiteSettings, getUpcomingEvents } from '@/lib/queries'
 import { absoluteUrl, asMedia, mediaSrc, serializeJsonLd } from '@/lib/utils'
 
 /**
  * Home page, in the order a new parent needs it: who we are, the key facts (when, who,
- * what, where, cost), what's coming up, then the school's history.
+ * what, where, cost), what's coming up, where to find us, then the school's history.
  */
 export default async function HomePage() {
   const [settings, events] = await Promise.all([getSiteSettings(), getUpcomingEvents(3)])
@@ -124,6 +125,19 @@ export default async function HomePage() {
           )}
         </div>
       </section>
+
+      {school?.address && (
+        <section aria-labelledby="find-us-heading" className="section border-line border-t">
+          <div className="container-site">
+            <h2 id="find-us-heading" className="text-display-lg">
+              Find us
+            </h2>
+            <div className="mt-8">
+              <LocationMap venue={school.venue} address={school.address} />
+            </div>
+          </div>
+        </section>
+      )}
 
       {school?.history && (
         <section aria-labelledby="history-heading" className="red-section section">

@@ -67,8 +67,14 @@ describe('security headers', () => {
   })
 
   it('embeds video only from YouTube’s no-cookie player', () => {
-    expect(csp['frame-src']).toEqual(['https://www.youtube-nocookie.com'])
+    expect(csp['frame-src']).toContain('https://www.youtube-nocookie.com')
     expect(csp['img-src']).toContain('https://i.ytimg.com')
+  })
+
+  // Maps and video are the only things the site may frame, and neither may run as script here.
+  it('frames only YouTube and Google Maps', () => {
+    expect(csp['frame-src']).toEqual(['https://www.youtube-nocookie.com', 'https://www.google.com'])
+    expect(csp['script-src'].some((s: string) => s.includes('google'))).toBe(false)
   })
 
   describe('media storage', () => {

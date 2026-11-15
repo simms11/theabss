@@ -11,6 +11,7 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 - **Events:** date, venue and summary are required text, with an optional flyer. Finished events move to "past" automatically.
 - **Enquiries:** stored with the minimum data, no public API access, readable by admins only.
 - **Safeguarding:** every photo upload must state whether it shows children; if it does, parental consent must be confirmed before it can be saved.
+- **Location:** one address in Site Settings drives the key facts, the directions link and the map.
 - **Media:** images in a private S3 bucket served through CloudFront; video embedded from YouTube.
 - **Legacy addresses:** older `.html` addresses redirect permanently to the current pages.
 - **Security:** a Content Security Policy and security headers, role-based access, and login lockout after five failed attempts.
