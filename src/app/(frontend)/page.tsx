@@ -1,13 +1,13 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { CallToAction } from '@/components/CallToAction'
 import { EventCard } from '@/components/EventCard'
 import { LocationMap } from '@/components/LocationMap'
 import { Quote } from '@/components/Quote'
 import { VideoEmbed } from '@/components/VideoEmbed'
-import { placeQuery } from '@/lib/maps'
-import { formatPounds, lowestWeeklyFee } from '@/lib/payments'
-import { getSiteSettings, getUpcomingEvents } from '@/lib/queries'
+import { getPublishedPages, getSiteSettings, getUpcomingEvents } from '@/lib/queries'
+import { keyFacts } from '@/lib/keyFacts'
 import { socialLinksFrom } from '@/lib/social'
 import { youtubeId } from '@/lib/youtube'
 import { absoluteUrl, asMedia, cn, mediaSrc, serializeJsonLd } from '@/lib/utils'
@@ -21,7 +21,11 @@ const SUBJECT_ACCENTS = ['border-t-red', 'border-t-gold', 'border-t-green', 'bor
  * school teaches by, what's coming up, where to find us, then the school's history.
  */
 export default async function HomePage() {
-  const [settings, events] = await Promise.all([getSiteSettings(), getUpcomingEvents(3)])
+  const [settings, events, pages] = await Promise.all([
+    getSiteSettings(),
+    getUpcomingEvents(3),
+    getPublishedPages(),
+  ])
   const { school, teaching, quotes } = settings
   const subjects = teaching?.subjects ?? []
   const videos = (settings.videos ?? []).flatMap((video) => {
@@ -30,20 +34,8 @@ export default async function HomePage() {
   })
   const hero = asMedia(settings.heroImage)
 
-  const lowestFee = lowestWeeklyFee(settings.payments?.fees?.rows)
-  const facts: Array<{ label: string; value?: string | null; href?: string; linkText?: string }> = [
-    { label: 'When', value: school?.sessions },
-    { label: 'Who', value: school?.ages },
-    { label: 'What', value: school?.subjects },
-    { label: 'Where', value: placeQuery(school?.venue, school?.address ?? '') },
-    // One source for the price: the fees table on the Fees and payment page.
-    {
-      label: 'Cost',
-      value: lowestFee === null ? null : `From ${formatPounds(lowestFee)} a week`,
-      href: '/payment',
-      linkText: 'See all fees',
-    },
-  ].filter((fact) => fact.value)
+  const facts = keyFacts(settings)
+  const has = (slug: string) => pages.some((page) => page.slug === slug)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -86,8 +78,12 @@ export default async function HomePage() {
         <div className="container-site py-20 sm:py-28">
           <p className="eyebrow text-accent">Saturday school in South London</p>
           <h1 className="text-display-xl mt-3 max-w-3xl">{settings.siteName}</h1>
+          {/* What the school is, in a sentence, before its values. */}
+          {settings.description && (
+            <p className="mt-5 max-w-2xl text-xl sm:text-2xl">{settings.description}</p>
+          )}
           {settings.tagline && (
-            <p className="text-fg-muted mt-5 max-w-2xl text-xl">{settings.tagline}</p>
+            <p className="text-accent mt-4 max-w-2xl font-bold">{settings.tagline}</p>
           )}
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/contact" className="btn-primary">
@@ -150,6 +146,11 @@ export default async function HomePage() {
               ))}
             </ul>
             {teaching?.tutoring && <p className="mt-6 max-w-2xl font-bold">{teaching.tutoring}</p>}
+            {has('educational-services') && (
+              <Link href="/educational-services" className="btn-outline mt-6">
+                More about what we teach
+              </Link>
+            )}
           </div>
         </section>
       )}
@@ -162,20 +163,20 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section aria-labelledby="events-heading" className="tint-section section">
-        <div className="container-site">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 id="events-heading" className="text-display-lg">
-              Coming up
-            </h2>
-            <Link
-              href="/events"
-              className="text-accent inline-flex min-h-11 items-center font-bold"
-            >
-              All events
-            </Link>
-          </div>
-          {events.length > 0 ? (
+      {events.length > 0 ? (
+        <section aria-labelledby="events-heading" className="tint-section section">
+          <div className="container-site">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <h2 id="events-heading" className="text-display-lg">
+                Coming up
+              </h2>
+              <Link
+                href="/events"
+                className="text-accent inline-flex min-h-11 items-center font-bold"
+              >
+                All events
+              </Link>
+            </div>
             <ul className="mt-8 grid gap-5">
               {events.map((event) => (
                 <li key={event.id}>
@@ -183,13 +184,26 @@ export default async function HomePage() {
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className="text-fg-muted mt-6">
-              No events are booked in just now. New dates are added here as soon as they are set.
-            </p>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      ) : (
+        // With nothing booked this is one line, not an empty section in the middle of the page.
+        <section aria-labelledby="events-heading" className="tint-section">
+          <div className="container-site flex flex-wrap items-center justify-between gap-x-8 gap-y-2 py-8">
+            <div>
+              <h2 id="events-heading" className="text-display-sm">
+                Coming up
+              </h2>
+              <p className="text-fg-muted mt-1">
+                No events are booked in just now. New dates are added here as soon as they are set.
+              </p>
+            </div>
+            <Link href="/events" className="btn-outline">
+              See past events
+            </Link>
+          </div>
+        </section>
+      )}
 
       {videos.length > 0 && (
         <section aria-labelledby="videos-heading" className="section">
@@ -236,6 +250,11 @@ export default async function HomePage() {
               )}
               <p>{school.history}</p>
             </div>
+            {has('about') && (
+              <Link href="/about" className="btn-outline mt-6">
+                More about our history
+              </Link>
+            )}
             {quotes?.closing?.text && (
               <div className="mt-10 max-w-2xl">
                 <Quote text={quotes.closing.text} attribution={quotes.closing.attribution} />
@@ -244,6 +263,8 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      <CallToAction />
     </>
   )
 }

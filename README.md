@@ -18,6 +18,7 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 - **Safeguarding:** every photo upload must state whether it shows children; if it does, parental consent must be confirmed before it can be saved.
 - **Location:** one address in Site Settings drives the key facts, the directions link and the map.
 - **Media:** images in a private S3 bucket served through CloudFront.
+- **Wayfinding:** a one-button menu on phones, the key facts beside every text page, and a closing "ask about a place" band so no page is a dead end.
 - **Legacy addresses:** older `.html` addresses redirect permanently to the current pages.
 - **Security:** a Content Security Policy and security headers, role-based access, and login lockout after five failed attempts.
 - **Accessibility:** WCAG 2.2 AA, checked by axe in the browser tests on every page. `/styleguide` documents the design tokens and colour contrast.

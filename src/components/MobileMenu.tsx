@@ -21,7 +21,7 @@ export function MobileMenu({ children }: { children: React.ReactNode }) {
   return (
     <details
       ref={details}
-      className="group md:hidden"
+      className="group lg:hidden"
       onKeyDown={(event) => {
         if (event.key === 'Escape' && details.current?.open) {
           details.current.removeAttribute('open')

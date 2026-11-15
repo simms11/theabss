@@ -2,7 +2,10 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { getPageBySlug, getPublishedPages } from '@/lib/queries'
+import { CallToAction } from '@/components/CallToAction'
+import { KeyFactsCard } from '@/components/KeyFactsCard'
+import { keyFacts } from '@/lib/keyFacts'
+import { getPageBySlug, getPublishedPages, getSiteSettings } from '@/lib/queries'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -21,7 +24,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function StandalonePage({ params }: Props) {
-  const page = await getPageBySlug((await params).slug)
+  const [page, settings] = await Promise.all([
+    getPageBySlug((await params).slug),
+    getSiteSettings(),
+  ])
   if (!page) notFound()
 
   return (
@@ -33,10 +39,14 @@ export default async function StandalonePage({ params }: Props) {
         </div>
       </section>
       <section className="section">
-        <div className="container-site">
+        <div className="container-site grid gap-12 lg:grid-cols-[minmax(0,42rem)_minmax(0,20rem)] lg:justify-between">
           <RichText data={page.content} className="prose-page" />
+          <div className="lg:sticky lg:top-6 lg:self-start">
+            <KeyFactsCard facts={keyFacts(settings).filter((fact) => fact.label !== 'What')} />
+          </div>
         </div>
       </section>
+      <CallToAction />
     </>
   )
 }

@@ -8,6 +8,14 @@ import type { SiteSetting } from '@/payload-types'
 export function Footer({ settings, pages }: { settings: SiteSetting; pages: PageLink[] }) {
   const { school, social, contactEmail, phone } = settings
   const socialLinks = socialLinksFrom(social)
+  // Every page of the site, so the footer works as a site map on any page.
+  const links = [
+    { href: '/events', label: 'Events' },
+    ...pages.map((page) => ({ href: `/${page.slug}`, label: page.title })),
+    { href: '/payment', label: 'Fees and payment' },
+    { href: '/forms', label: 'Forms and documents' },
+    { href: '/contact', label: 'Contact' },
+  ]
 
   return (
     <footer className="dark-section">
@@ -48,23 +56,12 @@ export function Footer({ settings, pages }: { settings: SiteSetting; pages: Page
         </div>
 
         <nav aria-label="Footer">
-          <h2 className="eyebrow text-accent">More</h2>
-          <ul className="mt-1">
-            {[
-              { href: '/contact', label: 'Contact' },
-              { href: '/payment', label: 'Fees and payment' },
-              { href: '/forms', label: 'Forms and documents' },
-            ].map((link) => (
+          <h2 className="eyebrow text-accent">Explore</h2>
+          <ul className="mt-1 grid gap-x-6 sm:grid-cols-2">
+            {links.map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className="inline-flex min-h-11 items-center">
                   {link.label}
-                </Link>
-              </li>
-            ))}
-            {pages.map((page) => (
-              <li key={page.id}>
-                <Link href={`/${page.slug}`} className="inline-flex min-h-11 items-center">
-                  {page.title}
                 </Link>
               </li>
             ))}

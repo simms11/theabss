@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
+import { CallToAction } from '@/components/CallToAction'
 import { EventLists } from '@/components/EventLists'
 import { EventsBrowser } from '@/components/EventsBrowser'
 import { eventFinishesAt } from '@/lib/dates'
@@ -77,6 +78,7 @@ export default async function EventsPage() {
       <Suspense fallback={<EventLists upcoming={upcoming} past={past} />}>
         <EventsBrowser upcoming={upcoming} past={past} />
       </Suspense>
+      <CallToAction />
     </>
   )
 }

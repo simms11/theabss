@@ -99,6 +99,65 @@ test.describe('Frontend', () => {
     )
   })
 
+  test('home page says what the school is before its values, and links onward', async ({
+    page,
+  }) => {
+    await page.goto('/')
+    const hero = page.locator('section', { has: page.getByRole('heading', { level: 1 }) })
+    await expect(hero.getByText(/Saturday lessons in English, Maths, Science/)).toBeVisible()
+    await expect(page.getByRole('link', { name: 'More about what we teach' })).toHaveAttribute(
+      'href',
+      '/educational-services',
+    )
+    await expect(page.getByRole('link', { name: 'More about our history' })).toHaveAttribute(
+      'href',
+      '/about',
+    )
+  })
+
+  // No page ends at a dead end: each closes with the next step.
+  for (const path of ['/', '/events', ...SEEDED_PAGES]) {
+    test(`${path} ends by inviting a parent to ask about a place`, async ({ page }) => {
+      await page.goto(path)
+      const band = page.locator('section', {
+        has: page.getByRole('heading', { name: 'Would you like a place for your child?' }),
+      })
+      await expect(band.getByRole('link', { name: 'Ask about a place' })).toHaveAttribute(
+        'href',
+        '/contact',
+      )
+      await expect(band.getByRole('link', { name: 'See fees' })).toHaveAttribute('href', '/payment')
+    })
+  }
+
+  test('text pages keep the key facts beside the text', async ({ page }) => {
+    await page.goto('/about')
+    const card = page.getByRole('complementary', { name: 'At a glance' })
+    await expect(card.getByText('Saturday mornings in term time')).toBeVisible()
+    await expect(card.getByText('From £13 a week')).toBeVisible()
+    await expect(card.getByRole('link', { name: 'Ask about a place' })).toBeVisible()
+  })
+
+  test('the footer links to every part of the site', async ({ page }) => {
+    await page.goto('/')
+    const footer = page.getByRole('navigation', { name: 'Footer' })
+    await expect(footer.getByRole('link')).toHaveText([
+      'Events',
+      'About',
+      'Educational Services',
+      'School Life',
+      'Fees and payment',
+      'Forms and documents',
+      'Contact',
+    ])
+  })
+
+  test('the site has its own icon', async ({ page, request }) => {
+    await page.goto('/')
+    const href = await page.locator('link[rel="icon"]').first().getAttribute('href')
+    expect((await request.get(href ?? '')).status()).toBe(200)
+  })
+
   // Privacy and speed: nothing from YouTube's player loads unless someone presses play.
   test('videos load only when played', async ({ page }) => {
     await page.goto('/')
@@ -176,7 +235,7 @@ test.describe('Frontend', () => {
   test('the school’s core pages are in the menu and carry their quotes', async ({ page }) => {
     await page.goto('/')
     const nav = page.getByRole('navigation', { name: 'Main' })
-    for (const name of ['About', 'Educational Services', 'School Life', 'Contact']) {
+    for (const name of ['About', 'Educational Services', 'School Life', 'Fees', 'Contact']) {
       await expect(nav.getByRole('link', { name, exact: true })).toBeVisible()
     }
 

@@ -51,7 +51,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <main id="main" className="flex-1">
           {children}
         </main>
-        <Footer settings={settings} pages={pages.filter((p) => p.navigation === 'footer')} />
+        <Footer settings={settings} pages={pages.filter((p) => p.navigation !== 'none')} />
       </body>
     </html>
   )
