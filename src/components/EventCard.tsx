@@ -1,13 +1,14 @@
-import Image from 'next/image'
-
+import { PhotoGallery } from '@/components/PhotoGallery'
 import { formatEventWhen } from '@/lib/dates'
 import { EVENT_TYPE_LABELS } from '@/lib/eventTypes'
+import { toGalleryPhotos } from '@/lib/photos'
 import { asMedia, mediaSrc } from '@/lib/utils'
 import type { Event } from '@/payload-types'
 
 /**
  * One event, with everything a parent needs as real text: what, when, where, cost. The
  * flyer, when there is one, is a small picture beside the text, never a replacement for it.
+ * Photos added after the event appear as a row of thumbnails.
  */
 export function EventCard({
   event,
@@ -19,18 +20,20 @@ export function EventCard({
   /** Offer "Add to calendar". For events that haven't happened yet. */
   calendarLink?: boolean
 }) {
-  const flyer = asMedia(event.flyer)
-  const thumb = flyer?.sizes?.card
+  // The flyer and the photos both open in the lightbox; neither replaces the text beside them.
+  const flyer = toGalleryPhotos([event.flyer]).map((photo) => ({
+    ...photo,
+    thumb: mediaSrc(asMedia(event.flyer), 'card'),
+  }))
+  const photos = toGalleryPhotos(event.photos)
   return (
     <article className="card flex flex-col gap-5 p-5 sm:flex-row sm:p-6">
-      {flyer && (
-        <Image
-          src={mediaSrc(flyer, 'card')}
-          alt={flyer.alt}
-          width={thumb?.width ?? flyer.width ?? 768}
-          height={thumb?.height ?? flyer.height ?? 576}
-          sizes="(min-width: 640px) 14rem, 100vw"
-          className="rounded-card w-full self-start object-cover sm:w-56"
+      {flyer.length > 0 && (
+        <PhotoGallery
+          photos={flyer}
+          label={event.title}
+          layout="cover"
+          className="w-full self-start sm:w-56"
         />
       )}
       <div className="min-w-0 flex-1">
@@ -58,6 +61,12 @@ export function EventCard({
           )}
         </dl>
         <p className="mt-3">{event.summary}</p>
+        {photos.length > 0 && (
+          <div className="mt-4">
+            <p className="eyebrow text-accent mb-2">Photos</p>
+            <PhotoGallery photos={photos} label={event.title} />
+          </div>
+        )}
         {(event.bookingUrl || calendarLink) && (
           <div className="mt-4 flex flex-wrap gap-3">
             {event.bookingUrl && (

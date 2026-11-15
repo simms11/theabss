@@ -8,6 +8,7 @@ import * as migration_20261115_213224_fees from './20261115_213224_fees';
 import * as migration_20261115_214136_travel_and_social from './20261115_214136_travel_and_social';
 import * as migration_20261115_215556_documents from './20261115_215556_documents';
 import * as migration_20261115_221112_page_wording from './20261115_221112_page_wording';
+import * as migration_20261115_221818_event_photos from './20261115_221818_event_photos';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261115_221112_page_wording.up,
     down: migration_20261115_221112_page_wording.down,
-    name: '20261115_221112_page_wording'
+    name: '20261115_221112_page_wording',
+  },
+  {
+    up: migration_20261115_221818_event_photos.up,
+    down: migration_20261115_221818_event_photos.down,
+    name: '20261115_221818_event_photos'
   },
 ];

@@ -41,6 +41,8 @@ export const Media: CollectionConfig = {
       { name: 'feature', width: 1200, height: 800, position: 'centre' },
       { name: 'hero', width: 1920, height: 1080, position: 'centre' },
       { name: 'og', width: 1200, height: 630, position: 'centre' },
+      // The whole picture, never cropped or enlarged: what the gallery's lightbox shows.
+      { name: 'large', width: 1600, withoutEnlargement: true },
     ],
     adminThumbnail: 'thumbnail',
     formatOptions: { format: 'webp', options: { quality: 82 } },

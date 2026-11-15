@@ -171,6 +171,10 @@ export interface Event {
    * Optional. Everything on the flyer that matters must also be typed above.
    */
   flyer?: (number | null) | Media;
+  /**
+   * Photos from the event, shown as a gallery on its card. Add them afterwards; each photo of children needs consent confirmed when it is uploaded.
+   */
+  photos?: (number | Media)[] | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -248,6 +252,14 @@ export interface Media {
       filename?: string | null;
     };
     og?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    large?: {
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -497,6 +509,7 @@ export interface EventsSelect<T extends boolean = true> {
   price?: T;
   bookingUrl?: T;
   flyer?: T;
+  photos?: T;
   meta?:
     | T
     | {
@@ -596,6 +609,16 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
         og?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        large?:
           | T
           | {
               url?: T;

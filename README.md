@@ -13,6 +13,7 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 - **Core pages:** About, Educational Services and School Life, created by the seed and editable in the admin.
 - **Contact form:** follows the GOV.UK form patterns, works without JavaScript, and emails the school. It collects the minimum needed to reply; messages are readable by admins only and deleted after 12 months.
 - **Fees and payment:** the headline price, the full fees table and the terms, then how to pay: online from a bank account through GoCardless payment links, so no payment data touches the site, or by bank transfer with copyable details.
+- **Photo gallery:** an event's photos and flyer open in a lightbox that works from the keyboard: arrow keys move between photos, Escape closes it and focus returns to where it was.
 - **Video:** the school's YouTube videos, shown as still images; the player loads only when a visitor presses play, from YouTube's no-cookie domain.
 - **Forms and documents:** PDF and Word files for parents, uploaded in the admin and listed by category with their type and size.
 - **Privacy:** the site sets no cookies of its own and uses no trackers. A privacy notice says what the contact form keeps and for how long, and which features come from other providers.
@@ -93,6 +94,5 @@ In development the database schema is created automatically and uploads are save
 
 ## Roadmap
 
-- Photo gallery with a lightbox
 - S3 bucket and CloudFront distribution defined in Terraform
 - Deployment

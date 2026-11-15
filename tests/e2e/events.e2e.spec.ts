@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 
 import { publishEvent, removeEvents, signIn } from '../helpers/events'
 
-const P = `E2E${Date.now()}`
+const P = `EVT${Date.now()}`
 const slug = (name: string) => `${P}-${name}`.toLowerCase()
 
 // Other test files expect an empty events list, so this file must not run beside them.

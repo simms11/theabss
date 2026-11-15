@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 
 import { signIn, signOut } from '../helpers/events'
 
-const P = `E2E${Date.now()}`
+const P = `FRM${Date.now()}`
 
 /** A small but structurally complete PDF: objects, a cross-reference table and a trailer. */
 const PDF = (() => {

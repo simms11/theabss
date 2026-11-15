@@ -201,6 +201,24 @@
   @apply border-ink bg-bg text-fg aria-invalid:border-accent mt-2 block min-h-11 w-full rounded-sm border-2 px-3 py-2 text-base aria-invalid:border-4;
 }
 
+/* The photo lightbox: a modal dialog over a dimmed page. */
+@layer components {
+  .lightbox::backdrop {
+    background: color-mix(in oklab, var(--color-ink) 92%, transparent);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .lightbox[open] {
+      animation: lightbox-in 200ms var(--ease-out-soft);
+    }
+  }
+}
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+    scale: 0.97;
+  }
+}
+
 @utility card {
   @apply rounded-card border-line bg-bg border;
 }

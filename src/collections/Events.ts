@@ -125,6 +125,17 @@ export const Events: CollectionConfig = {
         description: 'Optional. Everything on the flyer that matters must also be typed above.',
       },
     },
+    {
+      name: 'photos',
+      type: 'upload',
+      relationTo: 'media',
+      hasMany: true,
+      maxRows: 40,
+      admin: {
+        description:
+          'Photos from the event, shown as a gallery on its card. Add them afterwards; each photo of children needs consent confirmed when it is uploaded.',
+      },
+    },
   ],
   hooks: {
     afterChange: [revalidateEvent],
