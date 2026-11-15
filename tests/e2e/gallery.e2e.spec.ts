@@ -87,9 +87,32 @@ test.describe('Photo gallery', () => {
     await page.keyboard.press('ArrowLeft')
     await expect(lightbox.getByRole('status')).toHaveText('Photo 5 of 5')
 
-    // Focus stays inside the lightbox while it is open.
-    for (let i = 0; i < 6; i++) await page.keyboard.press('Tab')
-    expect(await lightbox.evaluate((el) => el.contains(document.activeElement))).toBe(true)
+    // While it is open, Tab never reaches the page behind it. Focus may pass through the
+    // browser's own controls on the way round (how that looks differs between systems), so
+    // the check is that it is never on an element outside the lightbox.
+    for (let i = 0; i < 8; i++) {
+      await page.keyboard.press('Tab')
+      const escaped = await lightbox.evaluate((el) => {
+        const focused = document.activeElement
+        return Boolean(focused && focused !== document.body && !el.contains(focused))
+      })
+      expect(escaped, `focus left the lightbox after ${i + 1} tabs`).toBe(false)
+    }
+    await lightbox.getByRole('button', { name: 'Close' }).focus()
+
+    // Check accessibility on a settled lightbox: the photo loaded, the pointer off the
+    // buttons, and any hover colour change finished. Otherwise a button can be caught
+    // half-way between its two colours.
+    await expect(lightbox.getByRole('img')).toHaveJSProperty('complete', true)
+    await page.mouse.move(0, 0)
+    await page.evaluate(() =>
+      Promise.all(
+        document
+          .getAnimations()
+          .filter((animation) => animation instanceof CSSTransition)
+          .map((animation) => animation.finished.catch(() => undefined)),
+      ),
+    )
 
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
