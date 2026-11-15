@@ -138,15 +138,51 @@ test.describe('Frontend', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('About')
   })
 
-  // Nothing is configured in a fresh database, so the page must still be useful.
-  test('payment page points to the contact form until payment details are added', async ({
+  test('fees and payment page gives the price first, then the full table, then how to pay', async ({
     page,
   }) => {
     await page.goto('/payment')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Payment')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Fees and payment')
+    await expect(page.getByRole('main').getByRole('heading', { level: 2 })).toHaveText([
+      'Weekly fees',
+      'How to pay',
+    ])
+    await expect(page.getByText('From £13')).toBeVisible()
+
+    // A real table: a screen reader announces each amount with its row and column.
+    const table = page.getByRole('table')
+    await expect(table.getByRole('columnheader')).toHaveText([
+      'Children',
+      'Parent not working',
+      'Parent working part time',
+      'Parent working full time',
+    ])
+    await expect(table.getByRole('rowheader')).toHaveText([
+      '1 child',
+      '2 children',
+      '3 children',
+      '4 children',
+    ])
+    await expect(table.getByRole('row', { name: /2 children/ }).getByRole('cell')).toHaveText([
+      '£19',
+      '£21',
+      '£23',
+    ])
+
+    // No payment details are set in a fresh database, so the page points to the contact form.
     await expect(page.getByRole('main').getByRole('link', { name: 'Contact us' })).toHaveAttribute(
       'href',
       '/contact',
+    )
+  })
+
+  test('home page shows the cost in the key facts, linked to the fees', async ({ page }) => {
+    await page.goto('/')
+    const facts = page.locator('section', { has: page.getByRole('heading', { name: 'Key facts' }) })
+    await expect(facts.getByText('From £13 a week')).toBeVisible()
+    await expect(facts.getByRole('link', { name: 'See all fees' })).toHaveAttribute(
+      'href',
+      '/payment',
     )
   })
 

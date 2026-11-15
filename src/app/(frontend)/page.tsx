@@ -6,6 +6,7 @@ import { LocationMap } from '@/components/LocationMap'
 import { Quote } from '@/components/Quote'
 import { VideoEmbed } from '@/components/VideoEmbed'
 import { placeQuery } from '@/lib/maps'
+import { formatPounds, lowestWeeklyFee } from '@/lib/payments'
 import { getSiteSettings, getUpcomingEvents } from '@/lib/queries'
 import { youtubeId } from '@/lib/youtube'
 import { absoluteUrl, asMedia, cn, mediaSrc, serializeJsonLd } from '@/lib/utils'
@@ -28,12 +29,19 @@ export default async function HomePage() {
   })
   const hero = asMedia(settings.heroImage)
 
-  const facts = [
+  const lowestFee = lowestWeeklyFee(settings.payments?.fees?.rows)
+  const facts: Array<{ label: string; value?: string | null; href?: string; linkText?: string }> = [
     { label: 'When', value: school?.sessions },
     { label: 'Who', value: school?.ages },
     { label: 'What', value: school?.subjects },
     { label: 'Where', value: placeQuery(school?.venue, school?.address ?? '') },
-    { label: 'Cost', value: school?.fees },
+    // One source for the price: the fees table on the Fees and payment page.
+    {
+      label: 'Cost',
+      value: lowestFee === null ? null : `From ${formatPounds(lowestFee)} a week`,
+      href: '/payment',
+      linkText: 'See all fees',
+    },
   ].filter((fact) => fact.value)
 
   const jsonLd = {
@@ -96,11 +104,21 @@ export default async function HomePage() {
             <h2 id="facts-heading" className="sr-only">
               Key facts
             </h2>
-            <dl className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+            <dl className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-5">
               {facts.map((fact) => (
                 <div key={fact.label}>
                   <dt className="eyebrow text-accent">{fact.label}</dt>
-                  <dd className="mt-1 text-lg font-bold">{fact.value}</dd>
+                  <dd className="mt-1 text-lg font-bold">
+                    {fact.value}
+                    {fact.href && (
+                      <Link
+                        href={fact.href}
+                        className="text-accent block min-h-11 pt-1 text-base font-bold"
+                      >
+                        {fact.linkText}
+                      </Link>
+                    )}
+                  </dd>
                 </div>
               ))}
             </dl>

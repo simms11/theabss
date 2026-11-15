@@ -3,6 +3,8 @@ import * as migration_20261115_203959_school_address_defaults from './20261115_2
 import * as migration_20261115_204405_teaching_and_quotes from './20261115_204405_teaching_and_quotes';
 import * as migration_20261115_210838_payments from './20261115_210838_payments';
 import * as migration_20261115_211930_videos from './20261115_211930_videos';
+import * as migration_20261115_213221_remove_cost_text from './20261115_213221_remove_cost_text';
+import * as migration_20261115_213224_fees from './20261115_213224_fees';
 
 export const migrations = [
   {
@@ -28,6 +30,16 @@ export const migrations = [
   {
     up: migration_20261115_211930_videos.up,
     down: migration_20261115_211930_videos.down,
-    name: '20261115_211930_videos'
+    name: '20261115_211930_videos',
+  },
+  {
+    up: migration_20261115_213221_remove_cost_text.up,
+    down: migration_20261115_213221_remove_cost_text.down,
+    name: '20261115_213221_remove_cost_text',
+  },
+  {
+    up: migration_20261115_213224_fees.up,
+    down: migration_20261115_213224_fees.down,
+    name: '20261115_213224_fees'
   },
 ];

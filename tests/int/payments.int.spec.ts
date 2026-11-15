@@ -3,7 +3,8 @@ import { getPayload, type Payload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import config from '@/payload.config'
-import { formatSortCode, isStripePaymentLink } from '@/lib/payments'
+import { DEFAULT_FEES } from '@/globals/SiteSettings'
+import { formatPounds, formatSortCode, isStripePaymentLink, lowestWeeklyFee } from '@/lib/payments'
 
 describe('card payment links', () => {
   it('accepts Stripe’s own payment pages', () => {
@@ -32,6 +33,32 @@ describe('card payment links', () => {
     expect(formatSortCode('401234')).toBe('40-12-34')
     expect(formatSortCode('40 12 34')).toBe('40-12-34')
     expect(formatSortCode('n/a')).toBe('n/a')
+  })
+})
+
+describe('fees', () => {
+  it('shows whole pounds without pence, and pence when there are some', () => {
+    expect(formatPounds(13)).toBe('£13')
+    expect(formatPounds(13.5)).toBe('£13.50')
+  })
+
+  it('finds the lowest weekly fee for the “from” price', () => {
+    expect(lowestWeeklyFee(DEFAULT_FEES)).toBe(13)
+    expect(lowestWeeklyFee([{ notWorking: 0, partTime: 9, fullTime: null }])).toBe(9)
+  })
+
+  it('shows no price at all when there is no fees table', () => {
+    expect(lowestWeeklyFee([])).toBeNull()
+    expect(lowestWeeklyFee(undefined)).toBeNull()
+  })
+
+  // A family with more children, or a parent in work, never pays less.
+  it('ships with a fees table that rises with children and with work', () => {
+    DEFAULT_FEES.forEach((row, index) => {
+      expect(row.notWorking).toBeLessThanOrEqual(row.partTime)
+      expect(row.partTime).toBeLessThanOrEqual(row.fullTime)
+      if (index > 0) expect(row.notWorking).toBeGreaterThan(DEFAULT_FEES[index - 1].notWorking)
+    })
   })
 })
 

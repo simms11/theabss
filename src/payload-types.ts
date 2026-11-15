@@ -664,10 +664,6 @@ export interface SiteSetting {
     sessions?: string | null;
     ages?: string | null;
     subjects?: string | null;
-    /**
-     * Left out of the site until it is filled in.
-     */
-    fees?: string | null;
     venue?: string | null;
     /**
      * Street address and postcode. The map on the home page points here.
@@ -715,6 +711,29 @@ export interface SiteSetting {
     | null;
   payments?: {
     intro?: string | null;
+    /**
+     * The fees table. The lowest weekly fee is also shown as “Cost” in the key facts on the home page.
+     */
+    fees?: {
+      rows?:
+        | {
+            /**
+             * e.g. “1 child”
+             */
+            children: string;
+            notWorking: number;
+            partTime: number;
+            fullTime: number;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * Paid once, when a family joins. Leave empty for none.
+       */
+      adminFee?: number | null;
+      schedule?: string | null;
+      notes?: string | null;
+    };
     /**
      * One button per payment. Create a Payment Link in the Stripe dashboard and paste its address here.
      */
@@ -775,7 +794,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         sessions?: T;
         ages?: T;
         subjects?: T;
-        fees?: T;
         venue?: T;
         address?: T;
         founded?: T;
@@ -821,6 +839,22 @@ export interface SiteSettingsSelect<T extends boolean = true> {
     | T
     | {
         intro?: T;
+        fees?:
+          | T
+          | {
+              rows?:
+                | T
+                | {
+                    children?: T;
+                    notWorking?: T;
+                    partTime?: T;
+                    fullTime?: T;
+                    id?: T;
+                  };
+              adminFee?: T;
+              schedule?: T;
+              notes?: T;
+            };
         links?:
           | T
           | {

@@ -14,7 +14,7 @@ export const LEGACY_PAGES: Record<string, string> = {
   '/abss-trips.html': '/events?type=trip',
   '/sports.html': '/events?type=sports',
   '/arts-and-events.html': '/events?type=performance',
-  '/finances.html': '/finances',
+  '/finances.html': '/payment',
   '/form-downloads.html': '/forms',
   '/payment.html': '/payment',
   '/social-media-links.html': '/contact',

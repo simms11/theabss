@@ -46,6 +46,22 @@ export const DEFAULT_SUBJECTS = [
   },
 ]
 
+/** Weekly fees in pounds, by number of children and the parent's work situation. */
+export const DEFAULT_FEES = [
+  { children: '1 child', notWorking: 13, partTime: 14, fullTime: 15 },
+  { children: '2 children', notWorking: 19, partTime: 21, fullTime: 23 },
+  { children: '3 children', notWorking: 24, partTime: 27, fullTime: 28 },
+  { children: '4 children', notWorking: 26, partTime: 29, fullTime: 33 },
+]
+
+const poundsField = (name: string, label: string): Field => ({
+  name,
+  type: 'number',
+  required: true,
+  min: 0,
+  label: `${label} (£ a week)`,
+})
+
 /** Videos from the school's YouTube channel. Editors can retitle, reorder, add or remove. */
 export const DEFAULT_VIDEOS = [
   {
@@ -141,12 +157,6 @@ export const SiteSettings: GlobalConfig = {
                   type: 'text',
                   label: 'What',
                   defaultValue: 'English, Maths, Science and African History',
-                },
-                {
-                  name: 'fees',
-                  type: 'text',
-                  label: 'Cost',
-                  admin: { description: 'Left out of the site until it is filled in.' },
                 },
                 {
                   name: 'venue',
@@ -287,7 +297,65 @@ export const SiteSettings: GlobalConfig = {
                   name: 'intro',
                   type: 'textarea',
                   maxLength: 400,
-                  defaultValue: 'You can pay fees or make a donation by card or by bank transfer.',
+                  defaultValue:
+                    'What it costs, and how to pay. Fees depend on how many children attend and on your work situation, so that the school stays affordable for every family.',
+                },
+                {
+                  name: 'fees',
+                  type: 'group',
+                  admin: {
+                    description:
+                      'The fees table. The lowest weekly fee is also shown as “Cost” in the key facts on the home page.',
+                  },
+                  fields: [
+                    {
+                      name: 'rows',
+                      type: 'array',
+                      maxRows: 10,
+                      labels: { singular: 'Row', plural: 'Weekly fees' },
+                      defaultValue: DEFAULT_FEES,
+                      fields: [
+                        {
+                          name: 'children',
+                          type: 'text',
+                          required: true,
+                          admin: { description: 'e.g. “1 child”', width: '25%' },
+                        },
+                        {
+                          type: 'row',
+                          fields: [
+                            poundsField('notWorking', 'Parent not working'),
+                            poundsField('partTime', 'Parent working part time'),
+                            poundsField('fullTime', 'Parent working full time'),
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      name: 'adminFee',
+                      type: 'number',
+                      min: 0,
+                      defaultValue: 30,
+                      label: 'One-off admin fee (£)',
+                      admin: {
+                        description: 'Paid once, when a family joins. Leave empty for none.',
+                      },
+                    },
+                    {
+                      name: 'schedule',
+                      type: 'text',
+                      label: 'When fees can be paid',
+                      defaultValue: 'Weekly, monthly or termly',
+                    },
+                    {
+                      name: 'notes',
+                      type: 'textarea',
+                      maxLength: 600,
+                      label: 'Terms',
+                      defaultValue:
+                        'If you no longer wish your child to attend, please give four weeks’ notice. Without notice, weekly fees continue to be owed while your child is absent.',
+                    },
+                  ],
                 },
                 {
                   name: 'links',

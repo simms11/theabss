@@ -19,6 +19,24 @@ export const isStripePaymentLink = (value: unknown): boolean => {
   }
 }
 
+type FeeRow = { notWorking?: number | null; partTime?: number | null; fullTime?: number | null }
+
+/** £13, or £13.50 when there are pence. */
+export const formatPounds = (amount: number): string =>
+  new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+  }).format(amount)
+
+/** The lowest weekly fee in the table, for "From £13 a week". Null when there are no fees. */
+export const lowestWeeklyFee = (rows: FeeRow[] | null | undefined): number | null => {
+  const amounts = (rows ?? [])
+    .flatMap((row) => [row.notWorking, row.partTime, row.fullTime])
+    .filter((amount): amount is number => typeof amount === 'number' && amount > 0)
+  return amounts.length ? Math.min(...amounts) : null
+}
+
 /** "401234" or "40 12 34" → "40-12-34". Anything that isn't six digits is shown as typed. */
 export const formatSortCode = (value: string): string => {
   const digits = value.replace(/\D/g, '')

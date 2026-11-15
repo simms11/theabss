@@ -58,7 +58,7 @@ export function Footer({ settings, pages }: { settings: SiteSetting; pages: Page
           <ul className="mt-1">
             {[
               { href: '/contact', label: 'Contact' },
-              { href: '/payment', label: 'Payment' },
+              { href: '/payment', label: 'Fees and payment' },
             ].map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className="inline-flex min-h-11 items-center">
