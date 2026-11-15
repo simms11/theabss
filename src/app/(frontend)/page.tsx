@@ -3,23 +3,30 @@ import Link from 'next/link'
 
 import { EventCard } from '@/components/EventCard'
 import { LocationMap } from '@/components/LocationMap'
+import { Quote } from '@/components/Quote'
+import { placeQuery } from '@/lib/maps'
 import { getSiteSettings, getUpcomingEvents } from '@/lib/queries'
-import { absoluteUrl, asMedia, mediaSrc, serializeJsonLd } from '@/lib/utils'
+import { absoluteUrl, asMedia, cn, mediaSrc, serializeJsonLd } from '@/lib/utils'
+
+/** The school's colours as a stripe on each subject card: a shape, never text. */
+const SUBJECT_ACCENTS = ['border-t-red', 'border-t-gold', 'border-t-green', 'border-t-ink']
 
 /**
  * Home page, in the order a new parent needs it: who we are, the key facts (when, who,
- * what, where, cost), what's coming up, where to find us, then the school's history.
+ * what, where, cost), what we teach, a quote the
+ * school teaches by, what's coming up, where to find us, then the school's history.
  */
 export default async function HomePage() {
   const [settings, events] = await Promise.all([getSiteSettings(), getUpcomingEvents(3)])
-  const { school } = settings
+  const { school, teaching, quotes } = settings
+  const subjects = teaching?.subjects ?? []
   const hero = asMedia(settings.heroImage)
 
   const facts = [
     { label: 'When', value: school?.sessions },
     { label: 'Who', value: school?.ages },
     { label: 'What', value: school?.subjects },
-    { label: 'Where', value: [school?.venue, school?.address].filter(Boolean).join(', ') },
+    { label: 'Where', value: placeQuery(school?.venue, school?.address ?? '') },
     { label: 'Cost', value: school?.fees },
   ].filter((fact) => fact.value)
 
@@ -97,6 +104,40 @@ export default async function HomePage() {
         </section>
       )}
 
+      {subjects.length > 0 && (
+        <section aria-labelledby="teaching-heading" className="section">
+          <div className="container-site">
+            <h2 id="teaching-heading" className="text-display-lg">
+              What we teach
+            </h2>
+            {teaching?.intro && <p className="mt-4 max-w-2xl text-lg">{teaching.intro}</p>}
+            <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {subjects.map((subject, index) => (
+                <li
+                  key={subject.id ?? subject.name}
+                  className={cn(
+                    'card border-t-4 p-5',
+                    SUBJECT_ACCENTS[index % SUBJECT_ACCENTS.length],
+                  )}
+                >
+                  <h3 className="text-display-sm">{subject.name}</h3>
+                  <p className="text-fg-muted mt-2">{subject.description}</p>
+                </li>
+              ))}
+            </ul>
+            {teaching?.tutoring && <p className="mt-6 max-w-2xl font-bold">{teaching.tutoring}</p>}
+          </div>
+        </section>
+      )}
+
+      {quotes?.feature?.text && (
+        <section aria-label="A quote we teach by" className="dark-section section">
+          <div className="container-site">
+            <Quote text={quotes.feature.text} attribution={quotes.feature.attribution} size="lg" />
+          </div>
+        </section>
+      )}
+
       <section aria-labelledby="events-heading" className="section">
         <div className="container-site">
           <div className="flex flex-wrap items-end justify-between gap-4">
@@ -154,6 +195,11 @@ export default async function HomePage() {
               )}
               <p>{school.history}</p>
             </div>
+            {quotes?.closing?.text && (
+              <div className="mt-10 max-w-2xl">
+                <Quote text={quotes.closing.text} attribution={quotes.closing.attribution} />
+              </div>
+            )}
           </div>
         </section>
       )}

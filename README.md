@@ -9,6 +9,7 @@ Built with **Next.js 16 (App Router, TypeScript, Tailwind 4)** and **Payload CMS
 - **Content management:** editors manage events, pages, photos and the school's key facts in the admin. The layout stays in code, so the design can't be broken.
 - **Publishing:** pages are prerendered and refresh within seconds of a change in the admin, with no redeploy.
 - **Events:** date, venue and summary are required text, with an optional flyer. Finished events move to "past" automatically.
+- **Teaching and quotes:** the home page lists each subject taught and carries the quotations the school teaches by, marked up as quotations with their source.
 - **Enquiries:** stored with the minimum data, no public API access, readable by admins only.
 - **Safeguarding:** every photo upload must state whether it shows children; if it does, parental consent must be confirmed before it can be saved.
 - **Location:** one address in Site Settings drives the key facts, the directions link and the map.

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { EventCard } from '@/components/EventCard'
+import { Quote } from '@/components/Quote'
 import type { Event } from '@/payload-types'
 
 export const metadata: Metadata = {
@@ -134,6 +135,26 @@ export default function Styleguide() {
               <a href="#buttons-heading" className="btn-outline">
                 Outline
               </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="quote-heading" className="section border-line border-t">
+        <div className="container-site">
+          <h2 id="quote-heading" className="text-display-md">
+            Quote
+          </h2>
+          <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            <div className="card dark-section p-6">
+              <Quote
+                text="A large quote, for its own band on a page."
+                attribution="Who said it"
+                size="lg"
+              />
+            </div>
+            <div className="card red-section p-6">
+              <Quote text="A smaller quote, inside a section." attribution="Who said it" />
             </div>
           </div>
         </div>

@@ -181,5 +181,5 @@
 
 /* Rich text from the CMS (standalone pages) */
 @utility prose-page {
-  @apply prose prose-lg text-fg prose-headings:font-display prose-headings:font-normal prose-headings:text-fg prose-a:text-accent prose-strong:text-fg prose-hr:border-line prose-img:rounded-card max-w-prose font-sans;
+  @apply prose prose-lg text-fg prose-headings:font-display prose-headings:font-normal prose-headings:text-fg prose-a:text-accent prose-strong:text-fg prose-blockquote:border-accent prose-blockquote:font-display prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-fg prose-hr:border-line prose-img:rounded-card max-w-prose font-sans;
 }

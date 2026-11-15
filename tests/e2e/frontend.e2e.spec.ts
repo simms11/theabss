@@ -17,6 +17,25 @@ test.describe('Frontend', () => {
     await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible()
   })
 
+  test('home page says what the school teaches, subject by subject', async ({ page }) => {
+    await page.goto('/')
+    const section = page.locator('section', {
+      has: page.getByRole('heading', { name: 'What we teach', level: 2 }),
+    })
+    for (const subject of ['African History', 'English', 'Maths', 'Science']) {
+      await expect(section.getByRole('heading', { name: subject, level: 3 })).toBeVisible()
+    }
+  })
+
+  // Quotes are marked up as quotations with their source, not as styled headings.
+  test('home page carries the school’s quotes, each with its attribution', async ({ page }) => {
+    await page.goto('/')
+    const quotes = page.locator('figure:has(blockquote)')
+    await expect(quotes).toHaveCount(2)
+    await expect(quotes.first().locator('blockquote')).toContainText('like a tree without roots')
+    await expect(quotes.first().locator('figcaption')).toContainText('Marcus Mosiah Garvey')
+  })
+
   // The address is text first (copyable, searchable, read aloud); the map is an extra.
   test('home page shows where the school is, as text and on a map', async ({ page }) => {
     await page.goto('/')

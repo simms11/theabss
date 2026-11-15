@@ -676,6 +676,33 @@ export interface SiteSetting {
     founded?: number | null;
     history?: string | null;
   };
+  teaching?: {
+    intro?: string | null;
+    /**
+     * One card per subject, in this order.
+     */
+    subjects?:
+      | {
+          name: string;
+          /**
+           * What pupils learn. Max 240 characters.
+           */
+          description: string;
+          id?: string | null;
+        }[]
+      | null;
+    tutoring?: string | null;
+  };
+  quotes?: {
+    feature?: {
+      text?: string | null;
+      attribution?: string | null;
+    };
+    closing?: {
+      text?: string | null;
+      attribution?: string | null;
+    };
+  };
   /**
    * Shown on the site as a link parents can tap.
    */
@@ -713,6 +740,35 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         address?: T;
         founded?: T;
         history?: T;
+      };
+  teaching?:
+    | T
+    | {
+        intro?: T;
+        subjects?:
+          | T
+          | {
+              name?: T;
+              description?: T;
+              id?: T;
+            };
+        tutoring?: T;
+      };
+  quotes?:
+    | T
+    | {
+        feature?:
+          | T
+          | {
+              text?: T;
+              attribution?: T;
+            };
+        closing?:
+          | T
+          | {
+              text?: T;
+              attribution?: T;
+            };
       };
   contactEmail?: T;
   phone?: T;
